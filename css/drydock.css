@@ -1,0 +1,104 @@
+
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #939393 #707070b8;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #707070b8;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #939393;
+  border-radius: 20px;
+  border: 3px solid #707070b8;
+}
+
+.fauxdesktop {
+  margin: 0px;
+  padding: 3px;
+  border: 0px solid red;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  background-image: url('images/backgrounds/background-dark-01.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.drydockpanel {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  width: 177px;
+  height: 300px;
+  border: 1px solid #7d7c7c59;
+  background: #272626bd;
+  border-radius: 5px;
+  padding: 4px;
+}
+
+.drydockbox {
+  padding: 2px;
+}
+
+.drydockbox p {
+  margin: 2px;
+  color: #b7b687;
+  font-size: 8pt;
+  font-family: Verdana;
+}
+
+.drydockconstrictor {
+  padding-left: 9px;
+  padding-right: 9px;
+}
+
+.button {
+  backface-visibility: hidden;
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  white-space: nowrap;
+  background: linear-gradient(0deg,#303030 0%,#3d3d3d 50%,#474747 100%);
+  border-radius: 3px;
+  border: 1px solid #222;
+  border-width: 1px 1px 1px 1px;
+  padding: 2px 10px 2px 10px;
+    color: #fffced;
+  font-size: 12px;
+  font-family: Verdana;
+  font-weight: 900;
+  font-style: normal
+}
+
+.button > div {
+  color: #ddd;
+  font-size: 10px;
+  font-family: Helvetica Neue;
+  font-weight: initial;
+  font-style: normal;
+  text-align: center;
+  margin: 0px 0px 0px 0px
+}
+
+.button > i {
+  font-size: 1em;
+  border-radius: 0px;
+  border: 0px solid transparent;
+  border-width: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
+  position: static
+}
+
+.button > .ld {
+  font-size: initial
+}
