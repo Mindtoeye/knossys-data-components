@@ -53,8 +53,8 @@ class DryDock extends Component {
    */
   render() {
     return (
-      <div tabIndex="0" className="fauxdesktop" onKeyDown={this.onKeyDown}>
-        <KDataTable data={this.state.data}></KDataTable>
+      <div tabIndex="0" className="fauxdesktop knossys-dark" onKeyDown={this.onKeyDown}>
+        <KDataTable headeruppercase="true" data={this.state.data}></KDataTable>
       </div>
     );
   }

@@ -66,7 +66,8 @@ class TableTools {
       let aType=this.getType (this.dataTools.getRandomInt(4));
       let newColumn={ 
         name: (String.fromCharCode(97+i) + " (" + aType + ")"),
-        type: aType
+        type: aType,
+        selected: false
       }
 
       generated.headers.push (newColumn);

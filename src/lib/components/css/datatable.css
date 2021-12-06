@@ -17,8 +17,7 @@
   /*display: block;*/
 }
 
-.kdatatable .tbl-header {
-  background-color: #606060;
+.kdatatable .tbl-header {  
   overflow-y: scroll; /* temp fix */
 }
  
@@ -35,11 +34,18 @@
 .kdatatable th {
   padding: 2px;
   padding-left: 4px;
-  text-align: left;
-  text-transform: uppercase;
-  /* border-right: 1px solid grey; */
-  border: 1px outset grey;
+  text-align: left;  
+  border: 1px outset #686868;
   overflow: hidden;
+  background-color: #4c4b4b;
+}
+
+.kdatatable th:hover {
+  background-color: #5e5a5a;
+}
+
+.kuppercase {
+  text-transform: uppercase;
 }
 
 .kdatatable td {
@@ -47,20 +53,31 @@
   padding-left: 4px;
   text-align: left;
   vertical-align:middle;
-  border-right: 1px solid grey;
+  border-right: 1px solid #4a4a4a;
   overflow: hidden;
 }
 
 .kdatatable-footer {
   background: #606060;
   border: 1px outset grey;
-  min-height: 20px;
+  max-height: 32px;
+  display: flex;
+  flex-direction: row;
+  padding: 0px;  
+}
+
+.ktable-footer-text {
+  font-size: 10pt;
+  line-height: 21pt;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 .kheader-cell {
   display: flex;
   flex-direction: row;
   cursor: pointer;
+  position: relative;
 }
 
 .kheader-label {
@@ -73,4 +90,17 @@
   padding: 0px;
   margin: 0px;
   line-height: 10pt;
+}
+
+.kgripper {
+  width: 2px;
+  padding: 0px;
+  margin: 0px;
+  flex: 0;
+  display: block;
+  position: absolute;
+  right: -2px;
+  height: 25px;
+  top: -2px;
+  cursor: ew-resize;
 }

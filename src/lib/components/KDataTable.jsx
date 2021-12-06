@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 
-import { BiChevronDown, BiChevronUp } from 'react-icons/bi';
+import { BiChevronDown, BiChevronUp, BiChevronsLeft, BiChevronsRight } from 'react-icons/bi';
+import { CgPushChevronLeft, CgPushChevronRight } from 'react-icons/cg';
+
+import { KButton, KTextInput, KToolbar, KToolbarItem } from '@knossys/knossys-ui-core';
 
 import DataTools from './utils/DataTools';
 
@@ -20,10 +23,28 @@ class KDataTable extends Component {
     this.dataTools=new DataTools ();
 
     this.state={
+      table: props.data,
+      page: 0,
+      pages: 1
     };
 
     this.onHeaderClick=this.onHeaderClick.bind(this);
     this.onCellClick=this.onCellClick.bind(this);
+    this.onPrevious=this.onPrevious.bind(this);
+    this.onNext=this.onNext.bind(this);
+    this.onEnd=this.onEnd.bind(this);
+    this.onBeginning=this.onBeginning.bind(this);    
+  }
+
+  /**
+   *
+   */
+  componentDidUpdate(prevProps) {    
+    if (this.props.data !== prevProps.data) {
+      this.setState ({
+        table: this.props.data
+      });
+    }
   }
 
   /**
@@ -32,6 +53,20 @@ class KDataTable extends Component {
   onHeaderClick (aCol) {
     console.log ("onHeaderClick ("+aCol+")");
 
+    let newTable=this.dataTools.deepCopy (this.state.table);
+
+    for (let i=0;i<newTable.headers.length;i++) {
+      let aHeader=newTable.headers [i];
+      if (i===aCol) {
+        aHeader.selected=true;
+      } else {
+        aHeader.selected=false;
+      }
+    }
+
+    this.setState ({
+      table: newTable
+    });
   }
 
   /**
@@ -47,25 +82,46 @@ class KDataTable extends Component {
    */
   generateHeadings () {
     let headings=[];
+    let labelclass="kheader-label";
 
-    if (!this.props.data) {
+    if (this.props.headeruppercase) {
+      if (this.props.headeruppercase=="true") {
+        labelclass="kheader-label kuppercase";
+      }
+    }
+
+    if (!this.state.table) {
       console.log ("Error: no data provided");
       return (headings);
     }
 
-    if (this.props.data.headers.length==0) {
+    if (this.state.table.headers.length==0) {
       console.log ("Error: no data provided");
       return (headings);
     }
 
-    let calculatedWidth=(100/this.props.data.headers.length)+"%";
+    let calculatedWidth=(100/this.state.table.headers.length)+"%";
 
-    for (let i=0;i<this.props.data.headers.length;i++) {
-      let aHeader=this.props.data.headers [i];
+    for (let i=0;i<this.state.table.headers.length;i++) {
+      let aHeader=this.state.table.headers [i];
+      let gripper;
+      let chevron;
+      
+      if (this.state.table.headers.length>2) {
+        if (i<(this.state.table.headers.length-1)) {
+          gripper=<div className="kgripper"/>;
+        }
+      }
+
+      if (this.state.table.headers [i].selected==true) {
+        chevron=<div className="kheader-chevron"><BiChevronDown/></div>;
+      }
+
       headings.push (<th width={calculatedWidth}>
         <div className="kheader-cell" onClick={(e) => this.onHeaderClick (i)}>
-          <div className="kheader-label">{aHeader.name}</div>
-          <div className="kheader-chevron"><BiChevronDown/></div>
+          <div className={labelclass}>{aHeader.name}</div>
+          {chevron}
+          {gripper}          
         </div>
       </th>);
     }
@@ -79,36 +135,37 @@ class KDataTable extends Component {
   generateContent () {
     let content=[];
 
-    if (!this.props.data) {
+    if (!this.state.table) {
       console.log ("Error: no data provided");
       return (content);
     }
 
-    if (this.props.data.headers.length==0) {
+    if (this.state.table.headers.length==0) {
       console.log ("Error: no data provided");
       return (content);
     }
 
-    let calculatedWidth=(100/this.props.data.headers.length)+"%";
+    let calculatedWidth=(100/this.state.table.headers.length)+"%";
 
-    for (let i=0;i<this.props.data.content.length;i++) {
-      let aRow=this.props.data.content [i];
+    for (let i=0;i<this.state.table.content.length;i++) {
+      let aRow=this.state.table.content [i];
 
       let selected=aRow.selected;
       let row=[];
 
       for (let j=0;j<aRow.row.length;j++) {
         let aValue=aRow.row [j];
+        let value=aValue;
 
         if (typeof aValue == "boolean") {
           if (aValue==true) {
-            row.push(<td width={calculatedWidth}>true</td>);
+            value="true";
           } else {
-            row.push(<td width={calculatedWidth}>false</td>);
+            value="false";
           }
-        } else {
-          row.push(<td width={calculatedWidth}>{aValue}</td>);
         }        
+
+        row.push(<td width={calculatedWidth} onClick={(e) => this.onCellClick (i,j)}>{value}</td>);
       }
 
       content.push(<tr>{row}</tr>);
@@ -116,6 +173,38 @@ class KDataTable extends Component {
 
     return (content);
   }
+
+  /**
+   * 
+   */
+  onPrevious () {
+    console.log ("onPrevious ()");
+
+  }
+
+  /**
+   * 
+   */
+  onNext () {
+    console.log ("onNext ()");
+
+  }  
+
+  /**
+   * 
+   */
+  onBeginning () {
+    console.log ("onBeginning ()");
+
+  }
+
+  /**
+   * 
+   */
+  onEnd () {
+    console.log ("onEnd ()");
+
+  }  
 
   /**
    * 
@@ -146,6 +235,13 @@ class KDataTable extends Component {
         </div>
  
         <div className="kdatatable-footer">
+          <KButton size={KButton.TINY} onClick={this.onBeginning} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><CgPushChevronLeft/></KButton>
+          <KButton size={KButton.TINY} onClick={this.onPrevious} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><BiChevronsLeft/></KButton>
+          <div className="ktable-footer-text">Page: </div>
+          <KTextInput size={KTextInput.REGULAR} style={{width: "25px"}} value={this.state.page}></KTextInput>
+          <div className="ktable-footer-text"> / {this.state.pages}  </div>
+          <KButton size={KButton.TINY} onClick={this.onNext} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><BiChevronsRight/></KButton>
+          <KButton size={KButton.TINY} onClick={this.onEnd} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><CgPushChevronRight/></KButton>
         </div> 
 
       </div>
