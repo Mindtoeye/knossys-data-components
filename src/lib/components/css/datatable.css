@@ -104,3 +104,11 @@
   top: -2px;
   cursor: ew-resize;
 }
+
+.ktable-status {
+  flex: 1;
+  border: 1px inset grey;
+  margin: 3px;
+  padding-left: 4px;
+  line-height: 14pt;
+}

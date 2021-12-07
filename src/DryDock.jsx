@@ -41,8 +41,6 @@ class DryDock extends Component {
 
     let generated=this.tableTools.generateTableData ();
 
-    console.log (generated);
-
     this.setState ({
       data: generated
     });
@@ -54,7 +52,7 @@ class DryDock extends Component {
   render() {
     return (
       <div tabIndex="0" className="fauxdesktop knossys-dark" onKeyDown={this.onKeyDown}>
-        <KDataTable headeruppercase="true" data={this.state.data}></KDataTable>
+        <KDataTable headeruppercase="true" shownavigation="true" data={this.state.data}></KDataTable>
       </div>
     );
   }

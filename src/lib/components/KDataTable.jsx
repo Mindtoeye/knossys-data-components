@@ -25,7 +25,8 @@ class KDataTable extends Component {
     this.state={
       table: props.data,
       page: 0,
-      pages: 1
+      pages: 1,
+      status: "ready"
     };
 
     this.onHeaderClick=this.onHeaderClick.bind(this);
@@ -117,7 +118,7 @@ class KDataTable extends Component {
         chevron=<div className="kheader-chevron"><BiChevronDown/></div>;
       }
 
-      headings.push (<th width={calculatedWidth}>
+      headings.push (<th key={"header-"+i} width={calculatedWidth}>
         <div className="kheader-cell" onClick={(e) => this.onHeaderClick (i)}>
           <div className={labelclass}>{aHeader.name}</div>
           {chevron}
@@ -147,6 +148,8 @@ class KDataTable extends Component {
 
     let calculatedWidth=(100/this.state.table.headers.length)+"%";
 
+    let cellId=0;
+
     for (let i=0;i<this.state.table.content.length;i++) {
       let aRow=this.state.table.content [i];
 
@@ -165,13 +168,31 @@ class KDataTable extends Component {
           }
         }        
 
-        row.push(<td width={calculatedWidth} onClick={(e) => this.onCellClick (i,j)}>{value}</td>);
+        row.push(<td key={"cell-"+cellId} width={calculatedWidth} onClick={(e) => this.onCellClick (i,j)}>{value}</td>);
+
+        cellId++;
       }
 
-      content.push(<tr>{row}</tr>);
+      content.push(<tr key={"row-"+i}>{row}</tr>);
     }
 
     return (content);
+  }
+
+  /**
+   * 
+   */
+  generateNavigation () {
+    return (<div className="kdatatable-footer">
+      <KButton size={KButton.TINY} onClick={this.onBeginning} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><CgPushChevronLeft/></KButton>
+      <KButton size={KButton.TINY} onClick={this.onPrevious} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><BiChevronsLeft/></KButton>
+      <div className="ktable-footer-text">Page: </div>
+      <KTextInput size={KTextInput.REGULAR} style={{width: "25px"}} value={this.state.page}></KTextInput>
+      <div className="ktable-footer-text"> / {this.state.pages}  </div>
+      <KButton size={KButton.TINY} onClick={this.onNext} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><BiChevronsRight/></KButton>
+      <KButton size={KButton.TINY} onClick={this.onEnd} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><CgPushChevronRight/></KButton>
+      <div className="ktable-status">{this.state.status}</div>
+    </div>);
   }
 
   /**
@@ -212,6 +233,13 @@ class KDataTable extends Component {
   render() {   
     let headings=this.generateHeadings();
     let body=this.generateContent();
+    let navigation;
+
+    if (this.props.shownavigation) {
+      if (this.props.shownavigation=="true") {
+        navigation=this.generateNavigation();
+      }
+    }
 
     return (
       <div className="kdatatable" style={{margin: "20px"}}>
@@ -234,15 +262,7 @@ class KDataTable extends Component {
           </table>
         </div>
  
-        <div className="kdatatable-footer">
-          <KButton size={KButton.TINY} onClick={this.onBeginning} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><CgPushChevronLeft/></KButton>
-          <KButton size={KButton.TINY} onClick={this.onPrevious} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><BiChevronsLeft/></KButton>
-          <div className="ktable-footer-text">Page: </div>
-          <KTextInput size={KTextInput.REGULAR} style={{width: "25px"}} value={this.state.page}></KTextInput>
-          <div className="ktable-footer-text"> / {this.state.pages}  </div>
-          <KButton size={KButton.TINY} onClick={this.onNext} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><BiChevronsRight/></KButton>
-          <KButton size={KButton.TINY} onClick={this.onEnd} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><CgPushChevronRight/></KButton>
-        </div> 
+        {navigation}
 
       </div>
     );
