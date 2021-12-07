@@ -67,7 +67,8 @@ class TableTools {
       let newColumn={ 
         name: (String.fromCharCode(97+i) + " (" + aType + ")"),
         type: aType,
-        selected: false
+        selected: false,
+        align: "left"
       }
 
       generated.headers.push (newColumn);
@@ -83,7 +84,7 @@ class TableTools {
         let aCol=generated.headers [k];
 
         if (aCol.type=="string") {
-          aRow.row.push (this.dataTools.makeid(25));
+          aRow.row.push (this.dataTools.makeid(45));
         }
 
         if (aCol.type=="number") {

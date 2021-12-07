@@ -34,7 +34,6 @@
 .kdatatable th {
   padding: 2px;
   padding-left: 4px;
-  text-align: left;  
   border: 1px outset #686868;
   overflow: hidden;
   background-color: #4c4b4b;
@@ -44,14 +43,9 @@
   background-color: #5e5a5a;
 }
 
-.kuppercase {
-  text-transform: uppercase;
-}
-
 .kdatatable td {
   padding: 2px;
   padding-left: 4px;
-  text-align: left;
   vertical-align:middle;
   border-right: 1px solid #4a4a4a;
   overflow: hidden;
@@ -92,6 +86,16 @@
   line-height: 10pt;
 }
 
+.kheader-alignment {
+  flex: 0;
+  font-size: 12pt;
+  padding: 0px;
+  padding-top: 2px;
+  padding-left: 3px;
+  margin: 0px;
+  line-height: 10pt;
+}
+
 .kgripper {
   width: 2px;
   padding: 0px;
@@ -111,4 +115,26 @@
   margin: 3px;
   padding-left: 4px;
   line-height: 14pt;
+}
+
+/* Misc formatting classes */
+
+.ktablealignleft {
+  text-align: left;  
+}
+
+.ktablealigncenter {
+  text-align: center;  
+}
+
+.ktablealignright {
+  text-align: right;  
+}
+
+.kuppercase {
+  text-transform: uppercase;
+}
+
+.kdatatablenowrap {
+  white-space: nowrap;
 }
