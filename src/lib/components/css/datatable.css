@@ -46,6 +46,7 @@
 .kdatatable td {
   padding: 2px;
   padding-left: 4px;
+  padding-right: 4px;
   vertical-align:middle;
   border-right: 1px solid #4a4a4a;
   overflow: hidden;

@@ -24,11 +24,13 @@ class KDataTable extends Component {
     this.dataTools=new DataTools ();
 
     this.state={
+      showindex: props.showindex,
       table: props.data,
       page: 0,
       pages: 1,
+      pagesize: props.pagesize,
       status: "ready",
-      wrapText: props.wrapText
+      wrapText: props.wraptext
     };
 
     this.onHeaderClick=this.onHeaderClick.bind(this);
@@ -45,14 +47,28 @@ class KDataTable extends Component {
    */
   componentDidUpdate(prevProps) {   
     if (this.props.data !== prevProps.data) {
+      let nrRows=this.props.data.content.length;
+      let pageCount=nrRows/this.state.pagesize;
+
+      if (pageCount<0) {
+        pageCount=1;
+      }
+
+      pageCount=Math.ceil(pageCount);
+
+      console.log ("Nr rows: " + nrRows + ", " + " page size: " + this.state.pagesize + ", page count: " + pageCount);
+
       this.setState ({
         table: this.props.data,
-        wrapText: this.props.wraptext
+        pages: pageCount,
+        wrapText: this.props.wraptext,
+        showindex: this.props.showindex
       });
     } else {
-      if (this.props.wraptext !== prevProps.wraptext) {
+      if ((this.props.wraptext !== prevProps.wraptext) || (this.props.showindex !== prevProps.showindex)){
         this.setState ({     
-          wrapText: this.props.wraptext
+          wrapText: this.props.wraptext,          
+          showindex: this.props.showindex
         });
       }    
     }
@@ -180,6 +196,11 @@ class KDataTable extends Component {
 
     let calculatedWidth=(100/this.state.table.headers.length)+"%";
 
+    if (this.state.showindex=="true") {
+      calculatedWidth=(100/(this.state.table.headers.length+1))+"%";
+      headings.push (<th key={"header-index"} style={{width: "100px"}}>X</th>);
+    }
+
     for (let i=0;i<this.state.table.headers.length;i++) {
       let aHeader=this.state.table.headers [i];
       let gripper;
@@ -248,6 +269,10 @@ class KDataTable extends Component {
 
     let calculatedWidth=(100/this.state.table.headers.length)+"%";
 
+    if (this.state.showindex=="true") {
+      calculatedWidth=(100/(this.state.table.headers.length+1))+"%";
+    }
+
     let cellId=0;
 
     for (let i=0;i<this.state.table.content.length;i++) {
@@ -256,7 +281,11 @@ class KDataTable extends Component {
       let selected=aRow.selected;
       let row=[];
 
-      for (let j=0;j<aRow.row.length;j++) {        
+      if (this.state.showindex=="true") {
+        row.push(<td className={cellClass} key={"cell-index-"+cellId} style={{width: "100px"}}>{i+1}</td>);
+      }
+
+      for (let j=0;j<aRow.row.length;j++) {
         let aValue=aRow.row [j];
         let value=aValue;
 
@@ -298,7 +327,7 @@ class KDataTable extends Component {
       <KButton size={KButton.TINY} onClick={this.onBeginning} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><CgPushChevronLeft/></KButton>
       <KButton size={KButton.TINY} onClick={this.onPrevious} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><BiChevronsLeft/></KButton>
       <div className="ktable-footer-text">Page: </div>
-      <KTextInput size={KTextInput.REGULAR} style={{width: "25px"}} value={this.state.page}></KTextInput>
+      <KTextInput size={KTextInput.REGULAR} style={{width: "25px"}} value={(this.state.page+1)}></KTextInput>
       <div className="ktable-footer-text"> / {this.state.pages}  </div>
       <KButton size={KButton.TINY} onClick={this.onNext} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><BiChevronsRight/></KButton>
       <KButton size={KButton.TINY} onClick={this.onEnd} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><CgPushChevronRight/></KButton>

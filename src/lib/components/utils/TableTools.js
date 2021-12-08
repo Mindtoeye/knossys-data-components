@@ -46,13 +46,31 @@ class TableTools {
   /**
    *
    */
-  generateTableData () {
-    let nrColumns=this.dataTools.getRandomInt(10);
+  generateTableData (maxRows,maxCols) {
+    console.log ("generateTableData ("+maxRows+","+maxCols+")");
+
+    if (maxRows<1) {
+      maxRows=1;      
+    }
+
+    if (maxRows>1000) {
+      maxRows=1000;
+    }
+
+    if (maxCols<1) {
+      maxCols=1;      
+    }
+
+    if (maxCols>100) {
+      maxCols=100;
+    }    
+
+    let nrColumns=this.dataTools.getRandomInt(maxCols);
     if (nrColumns==0) {
       nrColumns=1;
     }
 
-    let nrRows=this.dataTools.getRandomInt(100);
+    let nrRows=this.dataTools.getRandomInt(maxRows);
     if (nrRows==0) {
       nrRows=1;
     }

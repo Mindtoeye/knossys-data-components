@@ -102,3 +102,9 @@
 .button > .ld {
   font-size: initial
 }
+
+.drydock-label {
+  color: #cdc9c9;
+  display: inline;
+  margin: 6px;
+}
