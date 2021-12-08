@@ -6,6 +6,9 @@ import DataTools from './DataTools';
  */
 class TableTools {
   
+  /**
+   *
+   */  
   constructor () {
     this.dataTools=new DataTools ();
   }
@@ -75,10 +78,7 @@ class TableTools {
       nrRows=1;
     }
 
-    let generated={
-      headers:[],
-      content:[]
-    }
+    let generated=this.getEmptyTable ();
 
     for (let i=0;i<nrColumns;i++) {
       let aType=this.getType (this.dataTools.getRandomInt(4));

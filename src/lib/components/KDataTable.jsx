@@ -24,13 +24,9 @@ class KDataTable extends Component {
     this.dataTools=new DataTools ();
 
     this.state={
-      showindex: props.showindex,
-      table: props.data,
-      page: 0,
-      pages: 1,
-      pagesize: props.pagesize,
-      status: "ready",
-      wrapText: props.wraptext
+      source: props.source,
+      table: null,
+      status: "Ready"
     };
 
     this.onHeaderClick=this.onHeaderClick.bind(this);
@@ -45,33 +41,27 @@ class KDataTable extends Component {
   /**
    *
    */
-  componentDidUpdate(prevProps) {   
-    if (this.props.data !== prevProps.data) {
-      let nrRows=this.props.data.content.length;
-      let pageCount=nrRows/this.state.pagesize;
+  componentDidUpdate(prevProps) {
+    console.log ("componentDidUpdate ()");
 
-      if (pageCount<0) {
-        pageCount=1;
-      }
-
-      pageCount=Math.ceil(pageCount);
-
-      console.log ("Nr rows: " + nrRows + ", " + " page size: " + this.state.pagesize + ", page count: " + pageCount);
+    // Reset all the things!
+    if (this.props.trigger !== prevProps.trigger) {
+      let data=this.props.source.getData (this.props.source.getCurrentPage ());
 
       this.setState ({
-        table: this.props.data,
-        pages: pageCount,
-        wrapText: this.props.wraptext,
-        showindex: this.props.showindex
+        table: data,
+        status: "Data loaded"
       });
-    } else {
-      if ((this.props.wraptext !== prevProps.wraptext) || (this.props.showindex !== prevProps.showindex)){
-        this.setState ({     
-          wrapText: this.props.wraptext,          
-          showindex: this.props.showindex
-        });
-      }    
     }
+  }
+
+  /**
+   * 
+   */
+  setStatus (aMessage) {
+    this.setStatus ({
+      status: aMessage
+    });
   }
 
   /**
@@ -110,6 +100,11 @@ class KDataTable extends Component {
   onPrevious () {
     console.log ("onPrevious ()");
 
+    let newData=this.state.source.getData (this.state.source.getCurrentPage ()-1);
+
+    this.setState ({
+      table: newData
+    });
   }
 
   /**
@@ -118,6 +113,11 @@ class KDataTable extends Component {
   onNext () {
     console.log ("onNext ()");
 
+    let newData=this.state.source.getData (this.state.source.getCurrentPage ()+1);
+
+    this.setState ({
+      table: newData
+    });
   }  
 
   /**
@@ -178,25 +178,25 @@ class KDataTable extends Component {
     let headings=[];
     let labelclass="kheader-label";
 
+    if (!this.state.table) {
+      //console.log ("Info: no data yet");
+      return (headings);
+    }
+
+    if (this.state.table.headers.length==0) {
+      //console.log ("Info: zero length data provided");
+      return (headings);
+    }
+
     if (this.props.headeruppercase) {
       if (this.props.headeruppercase=="true") {
         labelclass="kheader-label kuppercase";
       }
     }
 
-    if (!this.state.table) {
-      console.log ("Error: no data provided");
-      return (headings);
-    }
-
-    if (this.state.table.headers.length==0) {
-      console.log ("Error: no data provided");
-      return (headings);
-    }
-
     let calculatedWidth=(100/this.state.table.headers.length)+"%";
 
-    if (this.state.showindex=="true") {
+    if (this.props.showindex=="true") {
       calculatedWidth=(100/(this.state.table.headers.length+1))+"%";
       headings.push (<th key={"header-index"} style={{width: "100px"}}>X</th>);
     }
@@ -254,22 +254,22 @@ class KDataTable extends Component {
     let cellClass="";
 
     if (!this.state.table) {
-      console.log ("Error: no data provided");
+      //console.log ("Info: no data yet");
       return (content);
     }
 
     if (this.state.table.headers.length==0) {
-      console.log ("Error: no data provided");
+      //console.log ("Info: zero length data provided");
       return (content);
     }
 
-    if (this.state.wrapText=="false") {
+    if (this.props.wraptext=="false") {
       cellClass="kdatatablenowrap ";
     }
 
     let calculatedWidth=(100/this.state.table.headers.length)+"%";
 
-    if (this.state.showindex=="true") {
+    if (this.props.showindex=="true") {
       calculatedWidth=(100/(this.state.table.headers.length+1))+"%";
     }
 
@@ -281,8 +281,8 @@ class KDataTable extends Component {
       let selected=aRow.selected;
       let row=[];
 
-      if (this.state.showindex=="true") {
-        row.push(<td className={cellClass} key={"cell-index-"+cellId} style={{width: "100px"}}>{i+1}</td>);
+      if (this.props.showindex=="true") {
+        row.push(<td className={cellClass} key={"cell-index-"+cellId} style={{width: "100px"}}>{i+1+(this.props.source.getCurrentPage ()*this.props.source.getPageSize())}</td>);
       }
 
       for (let j=0;j<aRow.row.length;j++) {
@@ -327,8 +327,8 @@ class KDataTable extends Component {
       <KButton size={KButton.TINY} onClick={this.onBeginning} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><CgPushChevronLeft/></KButton>
       <KButton size={KButton.TINY} onClick={this.onPrevious} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><BiChevronsLeft/></KButton>
       <div className="ktable-footer-text">Page: </div>
-      <KTextInput size={KTextInput.REGULAR} style={{width: "25px"}} value={(this.state.page+1)}></KTextInput>
-      <div className="ktable-footer-text"> / {this.state.pages}  </div>
+      <KTextInput size={KTextInput.REGULAR} style={{width: "25px"}} value={(this.state.source.getCurrentPage()+1)}></KTextInput>
+      <div className="ktable-footer-text"> / {this.state.source.getNrPages()}  </div>
       <KButton size={KButton.TINY} onClick={this.onNext} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><BiChevronsRight/></KButton>
       <KButton size={KButton.TINY} onClick={this.onEnd} style={{margin: "2px", padding: "1px 7px 1px 7px", fontSize: "14pt", lineHeight: "10pt"}}><CgPushChevronRight/></KButton>
       <div className="ktable-status">{this.state.status}</div>
@@ -337,8 +337,25 @@ class KDataTable extends Component {
 
   /**
    * 
+   */
+  generateEmpty () {
+    return (<div className="kdatatable" style={this.props.styles}>
+      <div className="ktable-empty">No data yet</div>
+    </div>);
+  }
+
+  /**
+   * 
    */  
   render() {   
+    if (!this.state.table) {
+      return (this.generateEmpty ());
+    }
+
+    if (this.state.table.headers.length==0) {
+      return (this.generateEmpty ());
+    }
+
     let headings=this.generateHeadings();
     let body=this.generateContent();
     let navigation;

@@ -5,6 +5,7 @@ import { KnossysInfoPanel, KButton, KTextInput } from '@knossys/knossys-ui-core'
 import DataTools from './lib/components/utils/DataTools';
 import TableTools from './lib/components/utils/TableTools';
 import KDataTable from './lib/components/KDataTable';
+import KDataSource from './lib/components/KDataSource';
 
 import '../css/main.css';
 import '../css/drydock.css';
@@ -22,14 +23,14 @@ class DryDock extends Component {
 
     this.dataTools=new DataTools ();
     this.tableTools=new TableTools ();
+    this.dataSource=new KDataSource ();
 
     this.state={
-      data: this.tableTools.getEmptyTable(),
-      wrapText: "true",
-      pagesize: 100,
+      trigger: 0,
+      wrapText: "false",
       maxsize: 1000,
-      maxcols: 25,
-      showindex: "true"
+      maxcols: 10,
+      showIndex: "false"
     }
 
     this.generateData=this.generateData.bind(this);
@@ -43,20 +44,18 @@ class DryDock extends Component {
   /**
    *
    */
-  componentDidMount () {
-    this.generateData ();
-  }
-
-  /**
-   *
-   */
   generateData () {
     console.log ("generateData ()");
 
-    let generated=this.tableTools.generateTableData (this.state.maxsize,this.state.maxcols);
+    let updated=this.state.trigger;
+    updated++;
+
+    this.dataSource.setMaxRows (this.state.maxsize);
+    this.dataSource.setMaxCols (this.state.maxcols);
+    this.dataSource.generateData ();
 
     this.setState ({
-      data: generated
+      trigger: updated
     });
   }
 
@@ -79,10 +78,14 @@ class DryDock extends Component {
   showIndex () {
     console.log ("showIndex ()");
 
-    if (this.state.showindex=="true") {
-      this.setState ({showindex: "false"});
+    if (this.state.showIndex=="true") {
+      this.setState ({
+        showIndex: "false"
+      });
     } else {
-      this.setState ({showindex: "true"});
+      this.setState ({
+        showIndex: "true"
+      });
     }
   }  
 
@@ -94,9 +97,8 @@ class DryDock extends Component {
     if (intValue>100) {
       intValue=100;
     }
-    this.setState({
-      pagesize: intValue
-    });
+
+    this.dataSource.setPageSize (intValue);
   }
 
   /**
@@ -131,22 +133,23 @@ class DryDock extends Component {
   render() {
     return (
       <div tabIndex="0" className="fauxdesktop knossys-dark" onKeyDown={this.onKeyDown}>
-        <KButton onClick={this.generateData} style={{marginLeft: "20px"}}>Generate</KButton>
         <KButton onClick={this.wrapText} style={{marginLeft: "2px"}}>{"Wrap text: " + this.state.wrapText}</KButton>
-        <KButton onClick={this.showIndex} style={{marginLeft: "2px"}}>{"Show index: " + this.state.showindex}</KButton>
+        <KButton onClick={this.showIndex} style={{marginLeft: "2px"}}>{"Show index: " + this.state.showIndex}</KButton>
+        <div className="drydock-divider"></div>
+        <KButton onClick={this.generateData} style={{marginLeft: "2px"}}>Generate</KButton>
         <div className="drydock-label">Page Size:</div>
-        <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={(this.state.pagesize)} handleChange={this.handleChangePageSize}></KTextInput>
+        <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={this.dataSource.getPageSize()} handleChange={this.handleChangePageSize}></KTextInput>
         <div className="drydock-label">Max Nr Rows:</div>
-        <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={(this.state.maxsize)} handleChange={this.handleChangeMaxSize}></KTextInput>
+        <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={this.state.maxsize} handleChange={this.handleChangeMaxSize}></KTextInput>
         <div className="drydock-label">Max Nr Colums:</div>
-        <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={(this.state.maxcols)} handleChange={this.handleChangeMaxCols}></KTextInput>        
+        <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={this.state.maxcols} handleChange={this.handleChangeMaxCols}></KTextInput>        
         <KDataTable 
+          source={this.dataSource}
+          trigger={this.state.trigger}
           headeruppercase="true" 
           shownavigation="true"
           wraptext={this.state.wrapText}
-          data={this.state.data}
-          pagesize={this.state.pagesize}
-          showindex={this.state.showindex}
+          showindex={this.state.showIndex}
           styles={{margin: "5px 20px 20px"}}></KDataTable>
       </div>
     );

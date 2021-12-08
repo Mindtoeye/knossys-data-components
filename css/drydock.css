@@ -108,3 +108,16 @@
   display: inline;
   margin: 6px;
 }
+
+.drydock-divider {
+  margin-left: 4px;
+  margin-right: 4px;
+  /* margin-top: 4px; */
+  /* border: 1px solid grey; */
+  width: 1px;
+  display: inline-block;
+  height: 16px;
+  /* padding-top: 14px; */
+  /* margin: 0px; */
+  /* background: grey; */
+}
