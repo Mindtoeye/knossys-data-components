@@ -126,6 +126,11 @@ class KDataTable extends Component {
   onBeginning () {
     console.log ("onBeginning ()");
 
+    let newData=this.state.source.getData (0);
+
+    this.setState ({
+      table: newData
+    });
   }
 
   /**
@@ -134,6 +139,11 @@ class KDataTable extends Component {
   onEnd () {
     console.log ("onEnd ()");
 
+    let newData=this.state.source.getData (this.state.source.getNrPages());
+
+    this.setState ({
+      table: newData
+    });
   }  
 
   /**

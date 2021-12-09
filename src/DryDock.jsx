@@ -6,6 +6,7 @@ import DataTools from './lib/components/utils/DataTools';
 import TableTools from './lib/components/utils/TableTools';
 import KDataTable from './lib/components/KDataTable';
 import KDataSource from './lib/components/KDataSource';
+import KDataSourceDummy from './lib/components/KDataSourceDummy';
 
 import '../css/main.css';
 import '../css/drydock.css';
@@ -23,7 +24,7 @@ class DryDock extends Component {
 
     this.dataTools=new DataTools ();
     this.tableTools=new TableTools ();
-    this.dataSource=new KDataSource ();
+    this.dataSource=new KDataSourceDummy ();
 
     this.state={
       trigger: 0,
@@ -157,3 +158,4 @@ class DryDock extends Component {
 }
 
 export default DryDock;
+
