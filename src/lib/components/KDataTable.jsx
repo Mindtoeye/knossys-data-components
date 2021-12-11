@@ -52,7 +52,7 @@ class KDataTable extends Component {
    *
    */
   componentDidUpdate(prevProps) {
-    //console.log ("componentDidUpdate ()");
+    console.log ("componentDidUpdate ()");
 
     // Reset all the things!
     if (this.props.trigger !== prevProps.trigger) {
@@ -279,8 +279,6 @@ class KDataTable extends Component {
 
     let aHeader=newTable.headers [aCol];
     
-    console.log (aHeader.align);
-
     if (aHeader.align==="left") {
       aHeader.align="center";
     } else {
@@ -331,11 +329,7 @@ class KDataTable extends Component {
       
       let calculatedWidth=this.state.headers [i].width+"px";
 
-      if (this.state.table.headers.length>2) {
-        if (i<(this.state.table.headers.length-1)) {
-          gripper=<div className="kgripper" onMouseDown={(e) => this.onHeaderMouseDown (e,i)} />;
-        }
-      }
+      gripper=<div className="kgripper" onMouseDown={(e) => this.onHeaderMouseDown (e,i)} />;
 
       if (this.state.table.headers [i].selected==true) {
         chevron=<div className="kheader-chevron"><BiChevronDown/></div>;
@@ -470,10 +464,12 @@ class KDataTable extends Component {
    */  
   render() {   
     if (!this.state.table) {
+      console.log ("no data");
       return (this.generateEmpty ());
     }
 
     if (this.state.table.headers.length==0) {
+      console.log ("empty data");
       return (this.generateEmpty ());
     }
 
@@ -522,7 +518,6 @@ class KDataTable extends Component {
         {loading}
  
         {navigation}
-
       </div>
     );
   }

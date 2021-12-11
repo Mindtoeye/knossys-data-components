@@ -80,17 +80,11 @@ class KDummyDataServer {
 
       console.log ("Bound data generation to " + source.maxRows + " rows and " + source.maxCols + " columns");
     }
-      
+
     source.getData ().then ((data) => {
       let reply=new KMessage (KMessage.STATUS_OK,data,null);
 
-      reply.meta.maxRows=source.maxRows;
-      reply.meta.maxCols=source.maxCols;
-      reply.meta.currentPage=source.currentPage;
-      reply.meta.nrPages=source.nrPages;
-      reply.meta.pageSize=source.pageSize;
-      reply.meta.nrCols=source.data.headers.length;            
-      reply.meta.nrRows=source.data.content.length;
+      reply.meta=source.getMeta ();
 
       res.send(reply.getMessageObject ());   
     });
@@ -139,13 +133,7 @@ class KDummyDataServer {
       source.getPage (aPage).then ((data) => {
         let reply=new KMessage (KMessage.STATUS_OK,data,null);
 
-        reply.meta.maxRows=source.maxRows;
-        reply.meta.maxCols=source.maxCols;
-        reply.meta.currentPage=source.currentPage;
-        reply.meta.nrPages=source.nrPages;
-        reply.meta.pageSize=source.pageSize;
-        reply.meta.nrCols=source.data.headers.length;            
-        reply.meta.nrRows=source.data.content.length;
+        reply.meta=source.getMeta ();
 
         res.send(reply.getMessageObject ());   
       });

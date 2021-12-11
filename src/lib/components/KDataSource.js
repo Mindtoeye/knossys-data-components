@@ -56,6 +56,21 @@ class KDataSource {
   /**
    *
    */
+  getMeta () {
+    return ({
+      maxRows: this.maxRows,
+      maxCols: this.maxCols,
+      currentPage: this.currentPage,
+      nrPages: this.nrPages,
+      pageSize: this.pageSize,
+      nrCols: this.data.headers.length,
+      nrRows: this.data.content.length
+    });
+  }
+
+  /**
+   *
+   */
   getData () {
     console.log ("getData ()");
     return (this.apiCall ("getdata","maxRows="+this.maxRows+"&maxCols="+this.maxCols));

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import { KnossysInfoPanel, KButton, KTextInput } from '@knossys/knossys-ui-core';
+import { WindowManager, ApplicationManager } from '@knossys/knossys-window-manager';
 
 import DataTools from './lib/components/utils/DataTools';
 import TableTools from './lib/components/utils/TableTools';
@@ -27,13 +28,16 @@ class DryDock extends Component {
     //this.dataSource=new KDataSourceDummy ();
     this.dataSource=new KDataSource ();    
 
+    this.appManager=new ApplicationManager ();
+
     this.state={
       trigger: 0,
       wrapText: "false",
       maxsize: 1000,
       maxcols: 10,
       showIndex: "false",
-      backend: this.dataSource.backend
+      backend: this.dataSource.backend,
+      globalSettings: {}
     }
 
     this.getData=this.getData.bind(this);
@@ -46,25 +50,55 @@ class DryDock extends Component {
   }
 
   /**
+   * 
+   */
+  componentDidMount () {
+    this.appManager.addApplication ({
+      title: "Knossys Data Table",
+      type: "window",
+      width: 929,
+      height: 662,
+      window: <KDataTable 
+        headeruppercase="true" 
+        shownavigation="true"      
+        source={this.dataSource}
+        trigger={this.state.trigger}
+        wraptext={this.state.wrapText}
+        showindex={this.state.showIndex}>
+      </KDataTable>
+    });    
+
+    this.updateWindowStack ();    
+  }
+
+  /**
+   * This will go into the app manager
+   */
+  updateWindowStack () {
+    this.setState(this.state);
+  }      
+
+  /**
    *
    */
   getData () {
     console.log ("getData ()");
 
-    let updated=this.state.trigger;
-    updated++;
-
     this.dataSource.backend=this.state.backend;
     this.dataSource.setMaxRows (this.state.maxsize);
     this.dataSource.setMaxCols (this.state.maxcols);
     this.dataSource.getData ().then ((aMessage) => {      
+      console.log ("Got data");
+
       // Modify internal state from message
       this.dataSource.stateFromMessage (aMessage);
 
       // then trigger visual changes
       this.setState ({
-        trigger: updated
+        trigger: this.state.trigger+1
       });
+
+      this.updateWindowStack ();
     });
   }
 
@@ -149,8 +183,11 @@ class DryDock extends Component {
    *
    */
   render() {
-    return (
-      <div tabIndex="0" className="fauxdesktop knossys-dark" onKeyDown={this.onKeyDown}>
+    return (<WindowManager
+        trigger={this.state.trigger}
+        classes="knossys-dark"
+        settings={this.state.globalSettings}
+        appManager={this.appManager}>
         <KButton onClick={this.wrapText} style={{marginLeft: "2px"}}>{"Wrap text: " + this.state.wrapText}</KButton>
         <KButton onClick={this.showIndex} style={{marginLeft: "2px"}}>{"Show index: " + this.state.showIndex}</KButton>
         <div className="drydock-divider"></div>
@@ -163,15 +200,7 @@ class DryDock extends Component {
         <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={this.state.maxcols} handleChange={this.handleChangeMaxCols}></KTextInput>
         <div className="drydock-label">Backend URL:</div>
         <KTextInput size={KTextInput.REGULAR} style={{width: "360px"}} value={this.state.backend} handleChange={this.handleChangeURL}></KTextInput>
-        <KDataTable 
-          source={this.dataSource}
-          trigger={this.state.trigger}
-          headeruppercase="true" 
-          shownavigation="true"
-          wraptext={this.state.wrapText}
-          showindex={this.state.showIndex}
-          styles={{margin: "5px 20px 20px"}}></KDataTable>
-      </div>
+      </WindowManager> 
     );
   }
 }
