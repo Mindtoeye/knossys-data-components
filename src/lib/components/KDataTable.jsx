@@ -7,6 +7,7 @@ import { GrTextAlignLeft, GrTextAlignCenter, GrTextAlignRight } from 'react-icon
 import { KButton, KTextInput, KToolbar, KToolbarItem } from '@knossys/knossys-ui-core';
 
 import DataTools from './utils/DataTools';
+import KMessage from './KMessage';
 
 import './css/datatable.css';
 
@@ -46,11 +47,9 @@ class KDataTable extends Component {
 
     // Reset all the things!
     if (this.props.trigger !== prevProps.trigger) {
-      let data=this.props.source.getData (this.props.source.getCurrentPage ());
-
       this.setState ({
-        table: data,
-        status: "Data loaded"
+        table: this.state.source.data,
+        status: "Loaded " + this.state.source.data.content.length + " rows"
       });
     }
   }
@@ -99,12 +98,17 @@ class KDataTable extends Component {
    */
   onPrevious () {
     console.log ("onPrevious ()");
+ 
+    this.state.source.getPage (this.state.source.getCurrentPage ()-1).then ((aMessage) => {      
+      // Modify internal state from message
+      this.state.source.stateFromMessage (aMessage);
 
-    let newData=this.state.source.getData (this.state.source.getCurrentPage ()-1);
-
-    this.setState ({
-      table: newData
-    });
+      console.log ("Updating state ...");
+      this.setState ({
+        table: this.state.source.data,
+        status: "Loaded " + this.state.source.data.content.length + " rows"
+      });
+    });    
   }
 
   /**
@@ -113,11 +117,15 @@ class KDataTable extends Component {
   onNext () {
     console.log ("onNext ()");
 
-    let newData=this.state.source.getData (this.state.source.getCurrentPage ()+1);
+    this.state.source.getPage (this.state.source.getCurrentPage ()+1).then ((aMessage) => {      
+      // Modify internal state from message
+      this.state.source.stateFromMessage (aMessage);
 
-    this.setState ({
-      table: newData
-    });
+      this.setState ({
+        table: this.state.source.data,
+        status: "Loaded " + this.state.source.data.content.length + " rows"
+      });      
+    });    
   }  
 
   /**
@@ -126,11 +134,15 @@ class KDataTable extends Component {
   onBeginning () {
     console.log ("onBeginning ()");
 
-    let newData=this.state.source.getData (0);
+    this.state.source.getPage (0).then ((aMessage) => {      
+      // Modify internal state from message
+      this.state.source.stateFromMessage (aMessage);
 
-    this.setState ({
-      table: newData
-    });
+      this.setState ({
+        table: this.state.source.data,
+        status: "Loaded " + this.state.source.data.content.length + " rows"
+      });      
+    });        
   }
 
   /**
@@ -139,11 +151,15 @@ class KDataTable extends Component {
   onEnd () {
     console.log ("onEnd ()");
 
-    let newData=this.state.source.getData (this.state.source.getNrPages());
+    this.state.source.getPage (this.state.source.nrPages).then ((aMessage) => {      
+      // Modify internal state from message
+      this.state.source.stateFromMessage (aMessage);
 
-    this.setState ({
-      table: newData
-    });
+      this.setState ({
+        table: this.state.source.data,
+        status: "Loaded " + this.state.source.data.content.length + " rows"
+      });      
+    });            
   }  
 
   /**
@@ -173,8 +189,6 @@ class KDataTable extends Component {
       }
     }
 
-    //console.log (newTable);
-
     this.setState ({
       table: newTable
     });
@@ -189,12 +203,10 @@ class KDataTable extends Component {
     let labelclass="kheader-label";
 
     if (!this.state.table) {
-      //console.log ("Info: no data yet");
       return (headings);
     }
 
     if (this.state.table.headers.length==0) {
-      //console.log ("Info: zero length data provided");
       return (headings);
     }
 

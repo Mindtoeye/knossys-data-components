@@ -24,39 +24,47 @@ class DryDock extends Component {
 
     this.dataTools=new DataTools ();
     this.tableTools=new TableTools ();
-    this.dataSource=new KDataSourceDummy ();
+    //this.dataSource=new KDataSourceDummy ();
+    this.dataSource=new KDataSource ();    
 
     this.state={
       trigger: 0,
       wrapText: "false",
       maxsize: 1000,
       maxcols: 10,
-      showIndex: "false"
+      showIndex: "false",
+      backend: this.dataSource.backend
     }
 
-    this.generateData=this.generateData.bind(this);
+    this.getData=this.getData.bind(this);
     this.wrapText=this.wrapText.bind(this);
     this.showIndex=this.showIndex.bind(this);
     this.handleChangePageSize=this.handleChangePageSize.bind(this);
     this.handleChangeMaxSize=this.handleChangeMaxSize.bind(this);
     this.handleChangeMaxCols=this.handleChangeMaxCols.bind(this);
+    this.handleChangeURL=this.handleChangeURL.bind(this);    
   }
 
   /**
    *
    */
-  generateData () {
-    console.log ("generateData ()");
+  getData () {
+    console.log ("getData ()");
 
     let updated=this.state.trigger;
     updated++;
 
+    this.dataSource.backend=this.state.backend;
     this.dataSource.setMaxRows (this.state.maxsize);
     this.dataSource.setMaxCols (this.state.maxcols);
-    this.dataSource.generateData ();
+    this.dataSource.getData ().then ((aMessage) => {      
+      // Modify internal state from message
+      this.dataSource.stateFromMessage (aMessage);
 
-    this.setState ({
-      trigger: updated
+      // then trigger visual changes
+      this.setState ({
+        trigger: updated
+      });
     });
   }
 
@@ -131,19 +139,30 @@ class DryDock extends Component {
   /**
    *
    */
+  handleChangeURL (aValue) {
+    this.setState({
+      backend: aValue
+    });    
+  }
+
+  /**
+   *
+   */
   render() {
     return (
       <div tabIndex="0" className="fauxdesktop knossys-dark" onKeyDown={this.onKeyDown}>
         <KButton onClick={this.wrapText} style={{marginLeft: "2px"}}>{"Wrap text: " + this.state.wrapText}</KButton>
         <KButton onClick={this.showIndex} style={{marginLeft: "2px"}}>{"Show index: " + this.state.showIndex}</KButton>
         <div className="drydock-divider"></div>
-        <KButton onClick={this.generateData} style={{marginLeft: "2px"}}>Generate</KButton>
+        <KButton onClick={this.getData} style={{marginLeft: "2px"}}>Generate</KButton>
         <div className="drydock-label">Page Size:</div>
         <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={this.dataSource.getPageSize()} handleChange={this.handleChangePageSize}></KTextInput>
         <div className="drydock-label">Max Nr Rows:</div>
         <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={this.state.maxsize} handleChange={this.handleChangeMaxSize}></KTextInput>
         <div className="drydock-label">Max Nr Colums:</div>
-        <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={this.state.maxcols} handleChange={this.handleChangeMaxCols}></KTextInput>        
+        <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={this.state.maxcols} handleChange={this.handleChangeMaxCols}></KTextInput>
+        <div className="drydock-label">Backend URL:</div>
+        <KTextInput size={KTextInput.REGULAR} style={{width: "360px"}} value={this.state.backend} handleChange={this.handleChangeURL}></KTextInput>
         <KDataTable 
           source={this.dataSource}
           trigger={this.state.trigger}
@@ -158,4 +177,5 @@ class DryDock extends Component {
 }
 
 export default DryDock;
+
 

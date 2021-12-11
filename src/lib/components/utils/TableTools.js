@@ -80,6 +80,8 @@ class TableTools {
 
     let generated=this.getEmptyTable ();
 
+    console.log ("Generating data for " + nrColumns + " number of columns");
+
     for (let i=0;i<nrColumns;i++) {
       let aType=this.getType (this.dataTools.getRandomInt(4));
       let newColumn={ 

@@ -1,6 +1,7 @@
 
 import DataTools from './utils/DataTools';
 import TableTools from './utils/TableTools';
+import KMessage from './KMessage';
 
 /**
  *
@@ -11,7 +12,10 @@ class KDataSource {
    *
    */
   constructor () {
-    this.backend="http://localhost:8055/";
+    this.backend="http://192.168.0.108:8055/";
+
+    this.dataTools=new DataTools ();
+    this.tableTools=new TableTools ();
 
     this.token=this.dataTools.uuidv4();
     this.session=this.dataTools.uuidv4();
@@ -26,8 +30,10 @@ class KDataSource {
 
     this.error=null;
 
-    this.dataTools=new DataTools ();
-    this.tableTools=new TableTools ();
+    this.standardHeader={
+      method: "GET",       
+      cache: 'no-cache'
+    };
 
     this.data=this.tableTools.getEmptyTable();
   }
@@ -35,20 +41,33 @@ class KDataSource {
   /**
    *
    */
-  generateData () {
-    console.log ("generateData ()");
+  stateFromMessage (aMessage) {
+    //console.log ("stateFromMessage ()");
+    
+    this.maxRows=aMessage.meta.maxRows;
+    this.maxCols=aMessage.meta.maxCols;
+    this.currentPage=aMessage.meta.currentPage;
+    this.nrPages=aMessage.meta.nrPages;
+    this.pageSize=aMessage.meta.pageSize;    
 
-    return (this.getData (0));
+    this.data=aMessage.data;
+  }
+
+  /**
+   *
+   */
+  getData () {
+    console.log ("getData ()");
+    return (this.apiCall ("getdata","maxRows="+this.maxRows+"&maxCols="+this.maxCols));
   }
  
   /**
    * The developer should already call this method with an in-bounds number, but
    * just in case we do another check here as well
    */  
-  getData (pageNr) {
+  getPage (pageNr) {
     console.log ("getData ("+pageNr+")");
-
-    this.apiCall ("getdata",this.processData);
+    return (this.apiCall ("getdatapage","page="+pageNr));
   }
 
   /**
@@ -108,65 +127,55 @@ class KDataSource {
       body: JSON.stringify(data) // body data type must match "Content-Type" header
     }
    */
-  apiCall (aCall,aCallback) {
+  apiCall (aCall,anArgumentSet) {
     console.log ("apiCall ("+aCall+")");
 
-    fetch(this.backend+"/api/v1/"+aCall+"?token="+this.token+"&session="+this.session,{method: "GET"})
-      .then(res => res.json())
-      .then(
-        (result) => {
-          if (aCallback) {
-            aCallback (result);
-          } else {
+    let aURL=this.backend+"api/v1/"+aCall+"?token="+this.token+"&session="+this.session+"&"+anArgumentSet;
 
-          }
-        },
-        // Note: it's important to handle errors here instead of a catch() block so that we 
-        // don't swallow exceptions from actual bugs in components.
-        (error) => {
-           this.error=error;
-        }
-      );
+    return new Promise((resolve, reject) => {  
+      fetch(aURL,this.standardHeader).then(resp => resp.text()).then((result) => {
+        let raw=JSON.parse(result);
+        let incomingMessage=new KMessage ();
+        incomingMessage.setStatus (KMessage.STATUS_OK);
+        incomingMessage.setMessage ("Data retrieved");
+        incomingMessage.fromMessageObject (raw.data,raw.meta);
+        resolve (incomingMessage);
+      });
+    }) .catch((error) => {
+      console.log (error);
+      let errorMessage=new KMessage ();
+      errorMessage.setStatus (KMessage.STATUS_ERROR);
+      errorMessage.setMessage(error);
+      reject(errorMessage);
+    });
+
+/*
+    return new Promise((resolve, reject) => {  
+      let aURL=this.backend+"api/v1/"+aCall+"?token="+this.token+"&session="+this.session+"&"+anArgumentSet;
+      console.log ("Fetching: " + aURL);
+
+      fetch(aURL,this.standardHeader).then ((response) => {
+        console.log ("Got raw response");
+        let raw=response.json();
+        console.log (raw);
+        let errorMessage=new KMessage ();
+        errorMessage.fromMessageObject (raw);
+        reject(errorMessage);        
+      }).then((data) => {
+          console.log ("Got data response");
+          let incomingMessage=new KMessage ();
+          incomingMessage.fromMessageObject (JSON.parse(data));
+          resolve (incomingMessage);
+        });
+      }) .catch((error) => {
+        console.log (error);
+        let errorMessage=new KMessage ();
+        errorMessage.setStatus (KMessage.STATUS_ERROR);
+        errorMessage.setMessage(error);
+        reject(errorMessage);
+      });
+  */      
   }
-
-  /**
-   * 
-   */
-  processData (data) {
-    console.log ("processData ()");
-
-    this.currentPage=pageNr;
-    
-    if (this.currentPage<0) {
-      this.currentPage=0;
-    }
-
-    if (this.currentPage>(this.nrPages-1)) {
-      this.currentPage=(this.nrPages-1);
-    }
-
-    let tempData=this.tableTools.getEmptyTable ();
-    
-    tempData.headers=this.dataTools.deepCopy (data);
-
-    let done=false;
-    let index=(this.currentPage*this.pageSize);
-    let pIndex=0;
-    while (done==false) {
-      tempData.content.push(this.dataTools.deepCopy (data.content [index]));
-
-      index++;
-      pIndex++;
-
-      if (index>(this.data.content.length-1)) {
-        done=true;
-      } else {
-        if (pIndex>this.pageSize) {
-          done=true;
-        }
-      }
-    } 
-  }  
 }
 
 export default KDataSource;
