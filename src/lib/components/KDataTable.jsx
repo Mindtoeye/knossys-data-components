@@ -4,7 +4,7 @@ import { BiChevronDown, BiChevronUp, BiChevronsLeft, BiChevronsRight } from 'rea
 import { CgPushChevronLeft, CgPushChevronRight } from 'react-icons/cg';
 import { GrTextAlignLeft, GrTextAlignCenter, GrTextAlignRight } from 'react-icons/gr';
 
-import { KButton, KTextInput, KToolbar, KToolbarItem } from '@knossys/knossys-ui-core';
+import { KButton, KTextInput, KToolbar, KToolbarItem, KWaitSpinner } from '@knossys/knossys-ui-core';
 
 import DataTools from './utils/DataTools';
 import KMessage from './KMessage';
@@ -27,10 +27,19 @@ class KDataTable extends Component {
     this.state={
       source: props.source,
       table: null,
-      status: "Ready"
+      headers: null, // Used to manage formatting
+      status: "Ready",
+      loading: false,
+      resizing: false,
+      resizeIndex: -1,
+      xOld: 0
     };
 
     this.onHeaderClick=this.onHeaderClick.bind(this);
+    this.onHeaderMouseDown=this.onHeaderMouseDown.bind(this);
+    this.onHeaderMouseUp=this.onHeaderMouseUp.bind(this);
+    this.onHeaderMouseMove=this.onHeaderMouseMove.bind(this);
+
     this.onCellClick=this.onCellClick.bind(this);
     this.onPrevious=this.onPrevious.bind(this);
     this.onNext=this.onNext.bind(this);
@@ -43,15 +52,30 @@ class KDataTable extends Component {
    *
    */
   componentDidUpdate(prevProps) {
-    console.log ("componentDidUpdate ()");
+    //console.log ("componentDidUpdate ()");
 
     // Reset all the things!
     if (this.props.trigger !== prevProps.trigger) {
       this.setState ({
         table: this.state.source.data,
+        headers: this.setFormatting (this.dataTools.deepCopy (this.state.source.data.headers)),
         status: "Loaded " + this.state.source.data.content.length + " rows"
       });
     }
+  }
+
+  /**
+   * 
+   */
+  setFormatting (aHeaderSet) {
+    //console.log ("setFormatting ()");
+
+    for (let i=0;i<aHeaderSet.length;i++) {
+      let aHeader=aHeaderSet [i];
+      aHeader.width=100;
+    }
+
+    return (aHeaderSet);
   }
 
   /**
@@ -67,7 +91,11 @@ class KDataTable extends Component {
    * 
    */
   onHeaderClick (aCol) {
-    console.log ("onHeaderClick ("+aCol+")");
+    if (this.state.resizing==true) {
+      return;
+    }
+
+    //console.log ("onHeaderClick ("+aCol+")");
 
     let newTable=this.dataTools.deepCopy (this.state.table);
 
@@ -88,7 +116,63 @@ class KDataTable extends Component {
   /**
    * 
    */
+  onHeaderMouseDown (e,anIndex) {
+    //console.log ("onHeaderMouseDown ("+anIndex+")");
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.setState ({
+      resizing: true,
+      resizeIndex: anIndex,
+      xOld: e.clientX
+    });
+  }
+
+  /**
+   * 
+   */
+  onHeaderMouseUp (e) {
+    //console.log ("onHeaderMouseUp ()");
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.setState ({
+      resizing: false
+    });    
+  }
+
+  /**
+   * 
+   */
+  onHeaderMouseMove (e) {
+    if (this.state.resizing==false) {
+      return;
+    }
+
+    let diff=e.clientX-this.state.xOld;
+
+    let newHeaders=this.dataTools.deepCopy (this.state.headers);
+
+    let targetHeader=newHeaders [this.state.resizeIndex];
+
+    targetHeader.width=targetHeader.width+diff;
+
+    this.setState ({
+      headers: newHeaders,
+      xOld: e.clientX
+    });        
+  }
+
+  /**
+   * 
+   */
   onCellClick (aRow,aCol) {
+    if (this.state.resizing==true) {
+      return;
+    }
+
     console.log ("onCellClick ("+aRow+","+aCol+")");
 
   }
@@ -98,17 +182,22 @@ class KDataTable extends Component {
    */
   onPrevious () {
     console.log ("onPrevious ()");
- 
-    this.state.source.getPage (this.state.source.getCurrentPage ()-1).then ((aMessage) => {      
-      // Modify internal state from message
-      this.state.source.stateFromMessage (aMessage);
 
-      console.log ("Updating state ...");
-      this.setState ({
-        table: this.state.source.data,
-        status: "Loaded " + this.state.source.data.content.length + " rows"
+    this.setState ({
+      loading: true
+    },(e) => {
+      this.state.source.getPage (this.state.source.getCurrentPage ()-1).then ((aMessage) => {      
+        // Modify internal state from message
+        this.state.source.stateFromMessage (aMessage);
+
+        console.log ("Updating state ...");
+        this.setState ({
+          table: this.state.source.data,
+          loading: false,
+          status: "Loaded " + this.state.source.data.content.length + " rows"
+        });
       });
-    });    
+    });
   }
 
   /**
@@ -117,15 +206,20 @@ class KDataTable extends Component {
   onNext () {
     console.log ("onNext ()");
 
-    this.state.source.getPage (this.state.source.getCurrentPage ()+1).then ((aMessage) => {      
-      // Modify internal state from message
-      this.state.source.stateFromMessage (aMessage);
+    this.setState ({
+      loading: true
+    },(e) => {
+      this.state.source.getPage (this.state.source.getCurrentPage ()+1).then ((aMessage) => {      
+        // Modify internal state from message
+        this.state.source.stateFromMessage (aMessage);
 
-      this.setState ({
-        table: this.state.source.data,
-        status: "Loaded " + this.state.source.data.content.length + " rows"
-      });      
-    });    
+        this.setState ({
+          table: this.state.source.data,
+          loading: false,
+          status: "Loaded " + this.state.source.data.content.length + " rows"
+        });      
+      });
+    });
   }  
 
   /**
@@ -134,15 +228,20 @@ class KDataTable extends Component {
   onBeginning () {
     console.log ("onBeginning ()");
 
-    this.state.source.getPage (0).then ((aMessage) => {      
-      // Modify internal state from message
-      this.state.source.stateFromMessage (aMessage);
+    this.setState ({
+      loading: true
+    },(e) => {
+      this.state.source.getPage (0).then ((aMessage) => {      
+        // Modify internal state from message
+        this.state.source.stateFromMessage (aMessage);
 
-      this.setState ({
-        table: this.state.source.data,
-        status: "Loaded " + this.state.source.data.content.length + " rows"
-      });      
-    });        
+        this.setState ({
+          table: this.state.source.data,
+          loading: false,
+          status: "Loaded " + this.state.source.data.content.length + " rows"
+        });      
+      });
+    }); 
   }
 
   /**
@@ -151,15 +250,20 @@ class KDataTable extends Component {
   onEnd () {
     console.log ("onEnd ()");
 
-    this.state.source.getPage (this.state.source.nrPages).then ((aMessage) => {      
-      // Modify internal state from message
-      this.state.source.stateFromMessage (aMessage);
+    this.setState ({
+      loading: true
+    },(e) => {
+      this.state.source.getPage (this.state.source.nrPages).then ((aMessage) => {      
+        // Modify internal state from message
+        this.state.source.stateFromMessage (aMessage);
 
-      this.setState ({
-        table: this.state.source.data,
-        status: "Loaded " + this.state.source.data.content.length + " rows"
-      });      
-    });            
+        this.setState ({
+          table: this.state.source.data,
+          loading: false,
+          status: "Loaded " + this.state.source.data.content.length + " rows"
+        });      
+      });
+    });     
   }  
 
   /**
@@ -216,11 +320,8 @@ class KDataTable extends Component {
       }
     }
 
-    let calculatedWidth=(100/this.state.table.headers.length)+"%";
-
     if (this.props.showindex=="true") {
-      calculatedWidth=(100/(this.state.table.headers.length+1))+"%";
-      headings.push (<th key={"header-index"} style={{width: "100px"}}>X</th>);
+      headings.push (<th key={"header-index"} style={{width: "50px", minWidth: "50px", maxWidth: "50px"}}>X</th>);
     }
 
     for (let i=0;i<this.state.table.headers.length;i++) {
@@ -228,9 +329,11 @@ class KDataTable extends Component {
       let gripper;
       let chevron;
       
+      let calculatedWidth=this.state.headers [i].width+"px";
+
       if (this.state.table.headers.length>2) {
         if (i<(this.state.table.headers.length-1)) {
-          gripper=<div className="kgripper"/>;
+          gripper=<div className="kgripper" onMouseDown={(e) => this.onHeaderMouseDown (e,i)} />;
         }
       }
 
@@ -289,12 +392,6 @@ class KDataTable extends Component {
       cellClass="kdatatablenowrap ";
     }
 
-    let calculatedWidth=(100/this.state.table.headers.length)+"%";
-
-    if (this.props.showindex=="true") {
-      calculatedWidth=(100/(this.state.table.headers.length+1))+"%";
-    }
-
     let cellId=0;
 
     for (let i=0;i<this.state.table.content.length;i++) {
@@ -304,12 +401,14 @@ class KDataTable extends Component {
       let row=[];
 
       if (this.props.showindex=="true") {
-        row.push(<td className={cellClass} key={"cell-index-"+cellId} style={{width: "100px"}}>{i+1+(this.props.source.getCurrentPage ()*this.props.source.getPageSize())}</td>);
+        row.push(<td className={cellClass} style={{width: "50px"}} key={"cell-index-"+cellId}>{i+1+(this.props.source.getCurrentPage ()*this.props.source.getPageSize())}</td>);
       }
 
       for (let j=0;j<aRow.row.length;j++) {
         let aValue=aRow.row [j];
         let value=aValue;
+
+        let calculatedWidth=this.state.headers [j].width+"px";
 
         let aHeader=this.state.table.headers [j];
         let alignClass="ktablealignleft";
@@ -330,7 +429,7 @@ class KDataTable extends Component {
           }
         }        
 
-        row.push(<td className={cellClass + alignClass} key={"cell-"+cellId} width={calculatedWidth} onClick={(e) => this.onCellClick (i,j)}>{value}</td>);
+        row.push(<td className={cellClass + alignClass} key={"cell-"+cellId} style={{width: calculatedWidth, minWidth: calculatedWidth, maxWidth: calculatedWidth}} onClick={(e) => this.onCellClick (i,j)}>{value}</td>);
 
         cellId++;
       }
@@ -381,6 +480,8 @@ class KDataTable extends Component {
     let headings=this.generateHeadings();
     let body=this.generateContent();
     let navigation;
+    let loading;
+    let table;
 
     if (this.props.shownavigation) {
       if (this.props.shownavigation=="true") {
@@ -388,26 +489,37 @@ class KDataTable extends Component {
       }
     }
 
+    if (this.state.loading==false) {
+      table=<div className="ktablecontainer">
+          <div className="tbl-header">
+            <table cellPadding="0" cellSpacing="0" border="0">
+              <thead>
+                <tr>
+                {headings}
+                </tr>
+              </thead>
+            </table>
+          </div>
+
+          <div className="tbl-content">
+            <table cellPadding="0" cellSpacing="0" border="0">
+              <tbody>
+              {body}
+              </tbody>
+            </table>
+          </div>
+      </div>;
+    } else {
+      loading=<div className="ktable-empty">
+        <KWaitSpinner style={{position: "relative", width: "75px", height: "75px", textAlign: "center", margin: "auto"}}  />
+      </div>;
+    }
+
     return (
-      <div className="kdatatable" style={this.props.styles}>
+      <div className="kdatatable" style={this.props.styles} onMouseMove={(e) => this.onHeaderMouseMove(e)} onMouseUp={(e) => this.onHeaderMouseUp (e)}>
+        {table}
 
-        <div className="tbl-header">
-          <table cellPadding="0" cellSpacing="0" border="0">
-            <thead>
-              <tr>
-              {headings}
-              </tr>
-            </thead>
-          </table>
-        </div>
-
-        <div className="tbl-content">
-          <table cellPadding="0" cellSpacing="0" border="0">
-            <tbody>
-            {body}
-            </tbody>
-          </table>
-        </div>
+        {loading}
  
         {navigation}
 
