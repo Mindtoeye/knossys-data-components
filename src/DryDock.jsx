@@ -8,6 +8,7 @@ import TableTools from './lib/components/utils/TableTools';
 import KDataTable from './lib/components/KDataTable';
 import KDataSource from './lib/components/KDataSource';
 import KDataSourceDummy from './lib/components/KDataSourceDummy';
+import KDataSourceSelect from './lib/components/KDataSourceSelect';
 
 import '../css/main.css';
 import '../css/drydock.css';
@@ -40,6 +41,7 @@ class DryDock extends Component {
       globalSettings: {}
     }
 
+    this.selectTable=this.selectTable.bind(this);
     this.getData=this.getData.bind(this);
     this.wrapText=this.wrapText.bind(this);
     this.showIndex=this.showIndex.bind(this);
@@ -77,6 +79,25 @@ class DryDock extends Component {
   updateWindowStack () {
     this.setState(this.state);
   }      
+
+  /**
+   *
+   */
+  selectTable () {
+    console.log ("selectTable ()");
+
+    this.appManager.addApplication ({
+      title: "Select a Table",
+      type: "dialog",
+      modal: false,
+      centered: true,
+      width: 320,
+      height: 200,
+      window: <KDataSourceSelect></KDataSourceSelect>
+    });    
+
+    this.updateWindowStack ();   
+  }
 
   /**
    *
@@ -188,6 +209,7 @@ class DryDock extends Component {
         classes="knossys-dark"
         settings={this.state.globalSettings}
         appManager={this.appManager}>
+        <KButton onClick={this.selectTable} style={{marginLeft: "2px"}}>Select</KButton>
         <KButton onClick={this.wrapText} style={{marginLeft: "2px"}}>{"Wrap text: " + this.state.wrapText}</KButton>
         <KButton onClick={this.showIndex} style={{marginLeft: "2px"}}>{"Show index: " + this.state.showIndex}</KButton>
         <div className="drydock-divider"></div>

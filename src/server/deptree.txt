@@ -1,4 +1,4 @@
-knossys-server@1.0.0 /home/vvelsen/Knossys/code/knossys-data-components/src/server
+knossys-server@1.0.0 /Users/vvelsen/Knossys/code/knossys-data-components/src/server
 ├─┬ @babel/cli@7.16.0
 │ ├─┬ @babel/core@7.16.0
 │ │ ├─┬ @babel/code-frame@7.16.0
@@ -63,7 +63,7 @@ knossys-server@1.0.0 /home/vvelsen/Knossys/code/knossys-data-components/src/serv
 │ │ │ └─┬ fill-range@7.0.1
 │ │ │   └─┬ to-regex-range@5.0.1
 │ │ │     └── is-number@7.0.0
-│ │ ├── UNMET OPTIONAL DEPENDENCY fsevents@~2.3.2
+│ │ ├── fsevents@2.3.2
 │ │ ├─┬ glob-parent@5.1.2
 │ │ │ └── is-glob@4.0.3 deduped
 │ │ ├─┬ is-binary-path@2.1.0
@@ -438,6 +438,7 @@ knossys-server@1.0.0 /home/vvelsen/Knossys/code/knossys-data-components/src/serv
 │ │ ├── browserslist@4.18.1 deduped
 │ │ └── semver@7.0.0
 │ └── semver@6.3.0
+├── @types/cors@2.8.12
 ├─┬ babel-loader@8.2.3
 │ ├── @babel/core@7.16.0 deduped
 │ ├─┬ find-cache-dir@3.3.2
@@ -471,9 +472,6 @@ knossys-server@1.0.0 /home/vvelsen/Knossys/code/knossys-data-components/src/serv
 │ └── webpack@5.64.1 deduped
 ├─┬ bufferutil@4.0.5
 │ └── node-gyp-build@4.3.0
-├─┬ cors@2.8.5
-│ ├── object-assign@4.1.1
-│ └── vary@1.1.2
 ├─┬ utf-8-validate@5.0.7
 │ └── node-gyp-build@4.3.0 deduped
 ├─┬ webpack-cli@4.9.1
@@ -526,107 +524,104 @@ knossys-server@1.0.0 /home/vvelsen/Knossys/code/knossys-data-components/src/serv
 │ │ │   └── kind-of@6.0.3 deduped
 │ │ └── wildcard@2.0.0
 │ └── webpack@5.64.1 deduped
-├─┬ webpack@5.64.1
-│ ├─┬ @types/eslint-scope@3.7.1
-│ │ ├─┬ @types/eslint@7.29.0
-│ │ │ ├── @types/estree@0.0.50 deduped
-│ │ │ └── @types/json-schema@7.0.9 deduped
-│ │ └── @types/estree@0.0.50 deduped
-│ ├── @types/estree@0.0.50
-│ ├─┬ @webassemblyjs/ast@1.11.1
-│ │ ├─┬ @webassemblyjs/helper-numbers@1.11.1
-│ │ │ ├── @webassemblyjs/floating-point-hex-parser@1.11.1
-│ │ │ ├── @webassemblyjs/helper-api-error@1.11.1 deduped
-│ │ │ └── @xtuc/long@4.2.2
-│ │ └── @webassemblyjs/helper-wasm-bytecode@1.11.1
-│ ├─┬ @webassemblyjs/wasm-edit@1.11.1
-│ │ ├── @webassemblyjs/ast@1.11.1 deduped
-│ │ ├── @webassemblyjs/helper-buffer@1.11.1
-│ │ ├── @webassemblyjs/helper-wasm-bytecode@1.11.1 deduped
-│ │ ├─┬ @webassemblyjs/helper-wasm-section@1.11.1
-│ │ │ ├── @webassemblyjs/ast@1.11.1 deduped
-│ │ │ ├── @webassemblyjs/helper-buffer@1.11.1 deduped
-│ │ │ ├── @webassemblyjs/helper-wasm-bytecode@1.11.1 deduped
-│ │ │ └── @webassemblyjs/wasm-gen@1.11.1 deduped
-│ │ ├─┬ @webassemblyjs/wasm-gen@1.11.1
-│ │ │ ├── @webassemblyjs/ast@1.11.1 deduped
-│ │ │ ├── @webassemblyjs/helper-wasm-bytecode@1.11.1 deduped
-│ │ │ ├── @webassemblyjs/ieee754@1.11.1 deduped
-│ │ │ ├── @webassemblyjs/leb128@1.11.1 deduped
-│ │ │ └── @webassemblyjs/utf8@1.11.1 deduped
-│ │ ├─┬ @webassemblyjs/wasm-opt@1.11.1
-│ │ │ ├── @webassemblyjs/ast@1.11.1 deduped
-│ │ │ ├── @webassemblyjs/helper-buffer@1.11.1 deduped
-│ │ │ ├── @webassemblyjs/wasm-gen@1.11.1 deduped
-│ │ │ └── @webassemblyjs/wasm-parser@1.11.1 deduped
-│ │ ├── @webassemblyjs/wasm-parser@1.11.1 deduped
-│ │ └─┬ @webassemblyjs/wast-printer@1.11.1
-│ │   ├── @webassemblyjs/ast@1.11.1 deduped
-│ │   └── @xtuc/long@4.2.2 deduped
-│ ├─┬ @webassemblyjs/wasm-parser@1.11.1
-│ │ ├── @webassemblyjs/ast@1.11.1 deduped
-│ │ ├── @webassemblyjs/helper-api-error@1.11.1
-│ │ ├── @webassemblyjs/helper-wasm-bytecode@1.11.1 deduped
-│ │ ├─┬ @webassemblyjs/ieee754@1.11.1
-│ │ │ └── @xtuc/ieee754@1.2.0
-│ │ ├─┬ @webassemblyjs/leb128@1.11.1
-│ │ │ └── @xtuc/long@4.2.2 deduped
-│ │ └── @webassemblyjs/utf8@1.11.1
-│ ├─┬ acorn-import-assertions@1.8.0
-│ │ └── acorn@8.5.0 deduped
-│ ├── acorn@8.5.0
-│ ├─┬ browserslist@4.18.1
-│ │ ├── caniuse-lite@1.0.30001280
-│ │ ├── electron-to-chromium@1.3.899
-│ │ ├── escalade@3.1.1
-│ │ ├── node-releases@2.0.1
-│ │ └── picocolors@1.0.0
-│ ├── chrome-trace-event@1.0.3
-│ ├─┬ enhanced-resolve@5.8.3
-│ │ ├── graceful-fs@4.2.8 deduped
-│ │ └── tapable@2.2.1 deduped
-│ ├── es-module-lexer@0.9.3
-│ ├─┬ eslint-scope@5.1.1
-│ │ ├─┬ esrecurse@4.3.0
-│ │ │ └── estraverse@5.3.0
-│ │ └── estraverse@4.3.0
-│ ├── events@3.3.0
-│ ├── glob-to-regexp@0.4.1
-│ ├── graceful-fs@4.2.8
-│ ├── json-parse-better-errors@1.0.2
-│ ├── loader-runner@4.2.0
-│ ├─┬ mime-types@2.1.34
-│ │ └── mime-db@1.51.0
-│ ├── neo-async@2.6.2
-│ ├─┬ schema-utils@3.1.1
-│ │ ├── @types/json-schema@7.0.9 deduped
-│ │ ├── ajv-keywords@3.5.2 deduped
-│ │ └── ajv@6.12.6 deduped
-│ ├── tapable@2.2.1
-│ ├─┬ terser-webpack-plugin@5.2.5
-│ │ ├─┬ jest-worker@27.3.1
-│ │ │ ├── @types/node@16.11.7
-│ │ │ ├── merge-stream@2.0.0 deduped
-│ │ │ └─┬ supports-color@8.1.1
-│ │ │   └── has-flag@4.0.0
-│ │ ├── schema-utils@3.1.1 deduped
-│ │ ├─┬ serialize-javascript@6.0.0
-│ │ │ └─┬ randombytes@2.1.0
-│ │ │   └── safe-buffer@5.1.2 deduped
-│ │ ├── source-map@0.6.1
-│ │ ├─┬ terser@5.10.0
-│ │ │ ├── acorn@8.5.0 deduped
-│ │ │ ├── commander@2.20.3
-│ │ │ ├─┬ source-map-support@0.5.20
-│ │ │ │ ├── buffer-from@1.1.2
-│ │ │ │ └── source-map@0.6.1
-│ │ │ └── source-map@0.7.3
-│ │ └── webpack@5.64.1 deduped
-│ ├─┬ watchpack@2.2.0
-│ │ ├── glob-to-regexp@0.4.1 deduped
-│ │ └── graceful-fs@4.2.8 deduped
-│ └── webpack-sources@3.2.2
-└─┬ ws@8.2.3
-  ├── bufferutil@4.0.5 deduped
-  └── utf-8-validate@5.0.7 deduped
+└─┬ webpack@5.64.1
+  ├─┬ @types/eslint-scope@3.7.1
+  │ ├─┬ @types/eslint@7.29.0
+  │ │ ├── @types/estree@0.0.50 deduped
+  │ │ └── @types/json-schema@7.0.9 deduped
+  │ └── @types/estree@0.0.50 deduped
+  ├── @types/estree@0.0.50
+  ├─┬ @webassemblyjs/ast@1.11.1
+  │ ├─┬ @webassemblyjs/helper-numbers@1.11.1
+  │ │ ├── @webassemblyjs/floating-point-hex-parser@1.11.1
+  │ │ ├── @webassemblyjs/helper-api-error@1.11.1 deduped
+  │ │ └── @xtuc/long@4.2.2
+  │ └── @webassemblyjs/helper-wasm-bytecode@1.11.1
+  ├─┬ @webassemblyjs/wasm-edit@1.11.1
+  │ ├── @webassemblyjs/ast@1.11.1 deduped
+  │ ├── @webassemblyjs/helper-buffer@1.11.1
+  │ ├── @webassemblyjs/helper-wasm-bytecode@1.11.1 deduped
+  │ ├─┬ @webassemblyjs/helper-wasm-section@1.11.1
+  │ │ ├── @webassemblyjs/ast@1.11.1 deduped
+  │ │ ├── @webassemblyjs/helper-buffer@1.11.1 deduped
+  │ │ ├── @webassemblyjs/helper-wasm-bytecode@1.11.1 deduped
+  │ │ └── @webassemblyjs/wasm-gen@1.11.1 deduped
+  │ ├─┬ @webassemblyjs/wasm-gen@1.11.1
+  │ │ ├── @webassemblyjs/ast@1.11.1 deduped
+  │ │ ├── @webassemblyjs/helper-wasm-bytecode@1.11.1 deduped
+  │ │ ├── @webassemblyjs/ieee754@1.11.1 deduped
+  │ │ ├── @webassemblyjs/leb128@1.11.1 deduped
+  │ │ └── @webassemblyjs/utf8@1.11.1 deduped
+  │ ├─┬ @webassemblyjs/wasm-opt@1.11.1
+  │ │ ├── @webassemblyjs/ast@1.11.1 deduped
+  │ │ ├── @webassemblyjs/helper-buffer@1.11.1 deduped
+  │ │ ├── @webassemblyjs/wasm-gen@1.11.1 deduped
+  │ │ └── @webassemblyjs/wasm-parser@1.11.1 deduped
+  │ ├── @webassemblyjs/wasm-parser@1.11.1 deduped
+  │ └─┬ @webassemblyjs/wast-printer@1.11.1
+  │   ├── @webassemblyjs/ast@1.11.1 deduped
+  │   └── @xtuc/long@4.2.2 deduped
+  ├─┬ @webassemblyjs/wasm-parser@1.11.1
+  │ ├── @webassemblyjs/ast@1.11.1 deduped
+  │ ├── @webassemblyjs/helper-api-error@1.11.1
+  │ ├── @webassemblyjs/helper-wasm-bytecode@1.11.1 deduped
+  │ ├─┬ @webassemblyjs/ieee754@1.11.1
+  │ │ └── @xtuc/ieee754@1.2.0
+  │ ├─┬ @webassemblyjs/leb128@1.11.1
+  │ │ └── @xtuc/long@4.2.2 deduped
+  │ └── @webassemblyjs/utf8@1.11.1
+  ├─┬ acorn-import-assertions@1.8.0
+  │ └── acorn@8.5.0 deduped
+  ├── acorn@8.5.0
+  ├─┬ browserslist@4.18.1
+  │ ├── caniuse-lite@1.0.30001280
+  │ ├── electron-to-chromium@1.3.899
+  │ ├── escalade@3.1.1
+  │ ├── node-releases@2.0.1
+  │ └── picocolors@1.0.0
+  ├── chrome-trace-event@1.0.3
+  ├─┬ enhanced-resolve@5.8.3
+  │ ├── graceful-fs@4.2.8 deduped
+  │ └── tapable@2.2.1 deduped
+  ├── es-module-lexer@0.9.3
+  ├─┬ eslint-scope@5.1.1
+  │ ├─┬ esrecurse@4.3.0
+  │ │ └── estraverse@5.3.0
+  │ └── estraverse@4.3.0
+  ├── events@3.3.0
+  ├── glob-to-regexp@0.4.1
+  ├── graceful-fs@4.2.8
+  ├── json-parse-better-errors@1.0.2
+  ├── loader-runner@4.2.0
+  ├─┬ mime-types@2.1.34
+  │ └── mime-db@1.51.0
+  ├── neo-async@2.6.2
+  ├─┬ schema-utils@3.1.1
+  │ ├── @types/json-schema@7.0.9 deduped
+  │ ├── ajv-keywords@3.5.2 deduped
+  │ └── ajv@6.12.6 deduped
+  ├── tapable@2.2.1
+  ├─┬ terser-webpack-plugin@5.2.5
+  │ ├─┬ jest-worker@27.3.1
+  │ │ ├── @types/node@16.11.7
+  │ │ ├── merge-stream@2.0.0 deduped
+  │ │ └─┬ supports-color@8.1.1
+  │ │   └── has-flag@4.0.0
+  │ ├── schema-utils@3.1.1 deduped
+  │ ├─┬ serialize-javascript@6.0.0
+  │ │ └─┬ randombytes@2.1.0
+  │ │   └── safe-buffer@5.1.2 deduped
+  │ ├── source-map@0.6.1
+  │ ├─┬ terser@5.10.0
+  │ │ ├── acorn@8.5.0 deduped
+  │ │ ├── commander@2.20.3
+  │ │ ├─┬ source-map-support@0.5.20
+  │ │ │ ├── buffer-from@1.1.2
+  │ │ │ └── source-map@0.6.1
+  │ │ └── source-map@0.7.3
+  │ └── webpack@5.64.1 deduped
+  ├─┬ watchpack@2.2.0
+  │ ├── glob-to-regexp@0.4.1 deduped
+  │ └── graceful-fs@4.2.8 deduped
+  └── webpack-sources@3.2.2
 

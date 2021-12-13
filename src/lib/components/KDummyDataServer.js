@@ -24,10 +24,12 @@ class KDummyDataServer {
     this.tableTools=new TableTools ();
 
     this.processRoot=this.processRoot.bind(this);
+    this.processTablesGet=this.processTablesGet.bind(this);
     this.processDataGet=this.processDataGet.bind(this);
     this.processDataGetPage=this.processDataGetPage.bind(this);    
 
     this.app.get('/',this.processRoot);
+    this.app.get('/api/v1/gettables',this.processTablesGet);
     this.app.get('/api/v1/getdata',this.processDataGet);
     this.app.get('/api/v1/getdatapage',this.processDataGetPage);
   }
@@ -38,6 +40,29 @@ class KDummyDataServer {
   processRoot (req,res) {
     console.log("processRoot ()");
     res.send(this.tableTools.getEmptyTable());    
+  }
+
+  /**
+   * 
+   */
+  processTablesGet (req,res) {
+    console.log("processTablesGet ()");
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    let data=[];
+
+    let maxTables=this.dataTools.getRandomInt (25);
+
+    for (let i=0;i<maxTables;i++) {
+      data.push (this.dataTools.makeid (15));
+    }
+
+    let reply=new KMessage (KMessage.STATUS_OK,data,null);
+
+    reply.meta.command="gettables";
+
+    res.send(reply.getMessageObject ());      
   }
 
   /**
@@ -85,6 +110,7 @@ class KDummyDataServer {
       let reply=new KMessage (KMessage.STATUS_OK,data,null);
 
       reply.meta=source.getMeta ();
+      reply.meta.command="getdata";
 
       res.send(reply.getMessageObject ());   
     });
@@ -134,6 +160,7 @@ class KDummyDataServer {
         let reply=new KMessage (KMessage.STATUS_OK,data,null);
 
         reply.meta=source.getMeta ();
+        reply.meta.command="getdatapage";
 
         res.send(reply.getMessageObject ());   
       });

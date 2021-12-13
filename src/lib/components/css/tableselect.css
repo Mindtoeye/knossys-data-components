@@ -1,0 +1,16 @@
+
+.ktable-select {
+  display: flex;
+  flex-direction: column; 
+}
+
+.ktable-select .ktable-tree {
+  flex:  0;
+  background: grey;
+  border-right: 1px solid black;
+  width: 250px;
+}
+
+.ktable-select .ktable-info {
+  flex: 1;
+}

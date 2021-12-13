@@ -71,6 +71,14 @@ class KDataSource {
   /**
    *
    */
+  getTables () {
+    console.log ("getTables ()");
+    return (this.apiCall ("gettables",""));
+  }
+ 
+  /**
+   *
+   */
   getData () {
     console.log ("getData ()");
     return (this.apiCall ("getdata","maxRows="+this.maxRows+"&maxCols="+this.maxCols));
