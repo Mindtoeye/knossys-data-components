@@ -21,9 +21,50 @@ class KDataSourceSelect extends Component {
     };
   }
 
+  /**
+   * 
+   */
+  componentDidMount () {
+    console.log ("componentDidMount ()");
+
+    if (this.props.source) {
+      this.props.source.getTables();
+    }
+  }  
+
+  /**
+   *
+   */
+  componentDidUpdate(prevProps) {
+    console.log ("componentDidUpdate ()");
+
+    
+  }  
+
+  /**
+   * 
+   */
+  generateTableTree () {
+    console.log ("generateTableTree ()");
+
+    let items=[];
+
+
+
+    return (items);
+  }
+
+  /**
+   * 
+   */
   render () {
+    let tabletree;
+
+    this.generateTableTree ();
+
     return (<div className="ktable-select">
       <div className="ktable-tree">
+      {tabletree}
       </div>
       <div className="ktable-info">
       </div>

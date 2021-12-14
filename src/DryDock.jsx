@@ -49,6 +49,9 @@ class DryDock extends Component {
     this.handleChangeMaxSize=this.handleChangeMaxSize.bind(this);
     this.handleChangeMaxCols=this.handleChangeMaxCols.bind(this);
     this.handleChangeURL=this.handleChangeURL.bind(this);    
+
+    this.getTableContent=this.getTableContent.bind(this);
+    this.getTableSelectContent=this.getTableSelectContent.bind(this);
   }
 
   /**
@@ -60,15 +63,8 @@ class DryDock extends Component {
       type: "window",
       width: 929,
       height: 662,
-      window: <KDataTable 
-        headeruppercase="true" 
-        shownavigation="true"      
-        source={this.dataSource}
-        trigger={this.state.trigger}
-        wraptext={this.state.wrapText}
-        showindex={this.state.showIndex}>
-      </KDataTable>
-    });    
+      content: this.getTableContent
+    });
 
     this.updateWindowStack ();    
   }
@@ -78,7 +74,31 @@ class DryDock extends Component {
    */
   updateWindowStack () {
     this.setState(this.state);
-  }      
+  }   
+
+  /**
+   *
+   */
+  getTableContent () {
+    return (<KDataTable 
+        headeruppercase="true" 
+        shownavigation="true"      
+        source={this.dataSource}
+        trigger={this.state.trigger}
+        wraptext={this.state.wrapText}
+        showindex={this.state.showIndex}>
+      </KDataTable>);
+  }   
+
+  /**
+   *
+   */
+  getTableSelectContent () {
+    return (<KDataSourceSelect  
+      source={this.dataSource}
+      trigger={this.state.trigger}>          
+      </KDataSourceSelect>);
+  }
 
   /**
    *
@@ -93,7 +113,7 @@ class DryDock extends Component {
       centered: true,
       width: 320,
       height: 200,
-      window: <KDataSourceSelect></KDataSourceSelect>
+      content: this.getTableSelectContent
     });    
 
     this.updateWindowStack ();   
@@ -204,6 +224,8 @@ class DryDock extends Component {
    *
    */
   render() {
+    console.log ("render()");
+    
     return (<WindowManager
         trigger={this.state.trigger}
         classes="knossys-dark"
