@@ -12,7 +12,7 @@ class KDataSource {
    *
    */
   constructor () {
-    this.backend="http://192.168.0.108:8055/";
+    this.backend="http://localhost:8055/";
 
     this.dataTools=new DataTools ();
     this.tableTools=new TableTools ();

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import { KRadioList } from '@knossys/knossys-ui-core';
+
 import DataTools from './utils/DataTools';
 import KMessage from './KMessage';
 
@@ -17,8 +19,10 @@ class KDataSourceSelect extends Component {
     super(props);
 
     this.state={
-
+      tables:[]
     };
+
+    this.radiolistChecked=this.radiolistChecked.bind(this);    
   }
 
   /**
@@ -28,18 +32,26 @@ class KDataSourceSelect extends Component {
     console.log ("componentDidMount ()");
 
     if (this.props.source) {
-      this.props.source.getTables();
+      this.props.source.getTables().then ((aMessage) => {      
+        console.log ("Got table data");
+
+        // Modify internal state from message
+        //this.dataSource.stateFromMessage (aMessage);
+        this.setState ({
+          tables: aMessage.data
+        });
+      });
     }
   }  
 
   /**
    *
    */
-  componentDidUpdate(prevProps) {
-    console.log ("componentDidUpdate ()");
+  radiolistChecked (aList) {
+    console.log ("radiolistChecked ()");
+    //console.log (JSON.stringify (aList, null, 2));
 
-    
-  }  
+  }
 
   /**
    * 
@@ -49,7 +61,12 @@ class KDataSourceSelect extends Component {
 
     let items=[];
 
-
+    for (let i=0;i<this.state.tables.length;i++) {
+       items.push ({
+         name: this.state.tables[i],
+         checked: false
+       });
+    }
 
     return (items);
   }
@@ -60,7 +77,7 @@ class KDataSourceSelect extends Component {
   render () {
     let tabletree;
 
-    this.generateTableTree ();
+    tabletree=<KRadioList list={this.generateTableTree ()} radiolistChecked={(list) => this.radiolistChecked (list)} />
 
     return (<div className="ktable-select">
       <div className="ktable-tree">

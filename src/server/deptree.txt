@@ -1,4 +1,4 @@
-knossys-server@1.0.0 /Users/vvelsen/Knossys/code/knossys-data-components/src/server
+knossys-server@1.0.0 /home/vvelsen/Knossys/code/knossys-data-components/src/server
 ├─┬ @babel/cli@7.16.0
 │ ├─┬ @babel/core@7.16.0
 │ │ ├─┬ @babel/code-frame@7.16.0
@@ -63,7 +63,7 @@ knossys-server@1.0.0 /Users/vvelsen/Knossys/code/knossys-data-components/src/ser
 │ │ │ └─┬ fill-range@7.0.1
 │ │ │   └─┬ to-regex-range@5.0.1
 │ │ │     └── is-number@7.0.0
-│ │ ├── fsevents@2.3.2
+│ │ ├── UNMET OPTIONAL DEPENDENCY fsevents@~2.3.2
 │ │ ├─┬ glob-parent@5.1.2
 │ │ │ └── is-glob@4.0.3 deduped
 │ │ ├─┬ is-binary-path@2.1.0
