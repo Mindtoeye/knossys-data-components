@@ -63,7 +63,7 @@ knossys-server@1.0.0 /home/vvelsen/Knossys/code/knossys-data-components/src/serv
 │ │ │ └─┬ fill-range@7.0.1
 │ │ │   └─┬ to-regex-range@5.0.1
 │ │ │     └── is-number@7.0.0
-│ │ ├── UNMET OPTIONAL DEPENDENCY fsevents@~2.3.2
+│ │ ├── fsevents@2.3.2
 │ │ ├─┬ glob-parent@5.1.2
 │ │ │ └── is-glob@4.0.3 deduped
 │ │ ├─┬ is-binary-path@2.1.0

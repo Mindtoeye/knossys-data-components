@@ -12,7 +12,7 @@
     "buildnpm": "rm -rf dist && NODE_ENV=production babel src/lib --out-dir dist --copy-files",
     "dev-build": "webpack --progress -d --config webpack.config.js",
     "watch": "webpack --progress -d --config webpack.config.js --watch",
-    "start": "webpack-dev-server --mode development --progress --config webpack.config.js --host 0.0.0.0 --port 8065"
+    "start": "webpack-dev-server --mode development --progress --config webpack.config.js --host 0.0.0.0 --port 8067"
   },
   "repository": {
     "type": "git",
