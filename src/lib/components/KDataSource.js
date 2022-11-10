@@ -39,6 +39,13 @@ class KDataSource {
   }
 
   /**
+   * 
+   */
+  setBackend (aURL) {
+    this.backend=aURL;
+  }
+
+  /**
    *
    */
   stateFromMessage (aMessage) {
@@ -163,41 +170,14 @@ class KDataSource {
         incomingMessage.setMessage ("Data retrieved");
         incomingMessage.fromMessageObject (raw.data,raw.meta);
         resolve (incomingMessage);
-      });
-    }) .catch((error) => {
-      console.log (error);
-      let errorMessage=new KMessage ();
-      errorMessage.setStatus (KMessage.STATUS_ERROR);
-      errorMessage.setMessage(error);
-      reject(errorMessage);
-    });
-
-/*
-    return new Promise((resolve, reject) => {  
-      let aURL=this.backend+"api/v1/"+aCall+"?token="+this.token+"&session="+this.session+"&"+anArgumentSet;
-      console.log ("Fetching: " + aURL);
-
-      fetch(aURL,this.standardHeader).then ((response) => {
-        console.log ("Got raw response");
-        let raw=response.json();
-        console.log (raw);
-        let errorMessage=new KMessage ();
-        errorMessage.fromMessageObject (raw);
-        reject(errorMessage);        
-      }).then((data) => {
-          console.log ("Got data response");
-          let incomingMessage=new KMessage ();
-          incomingMessage.fromMessageObject (JSON.parse(data));
-          resolve (incomingMessage);
-        });
-      }) .catch((error) => {
+      }).catch((error) => {
         console.log (error);
         let errorMessage=new KMessage ();
         errorMessage.setStatus (KMessage.STATUS_ERROR);
         errorMessage.setMessage(error);
         reject(errorMessage);
       });
-  */      
+    });   
   }
 }
 

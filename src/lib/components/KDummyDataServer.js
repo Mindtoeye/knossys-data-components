@@ -1,4 +1,6 @@
 import express from 'express';
+import fileUpload from 'express-fileupload';
+import cors from 'cors';
 
 import KHashTable from './utils/KHashTable';
 import DataTools from './utils/DataTools';
@@ -28,10 +30,13 @@ class KDummyDataServer {
     this.processDataGet=this.processDataGet.bind(this);
     this.processDataGetPage=this.processDataGetPage.bind(this);    
 
+    this.app.use(fileUpload());
+    this.app.use(cors({ origin: '*' }));
     this.app.get('/',this.processRoot);
     this.app.get('/api/v1/gettables',this.processTablesGet);
     this.app.get('/api/v1/getdata',this.processDataGet);
     this.app.get('/api/v1/getdatapage',this.processDataGetPage);
+    this.app.post('/api/v1/upload', this.processFileUpload);       
   }
 
   /**
@@ -168,11 +173,36 @@ class KDummyDataServer {
   }
 
   /**
+   * https://www.npmjs.com/package/express-fileupload 
+   * 
+   * The req.files.foo object will contain the following:
+   * 
+   * req.files.foo.name: "car.jpg"
+   * req.files.foo.mv: A function to move the file elsewhere on your server. Can take a callback or return a promise.
+   * req.files.foo.mimetype: The mimetype of your file
+   * req.files.foo.data: A buffer representation of your file, returns empty buffer in case useTempFiles option was set to true.
+   * req.files.foo.tempFilePath: A path to the temporary file in case useTempFiles option was set to true.
+   * req.files.foo.truncated: A boolean that represents if the file is over the size limit
+   * req.files.foo.size: Uploaded size in bytes
+   * req.files.foo.md5: MD5 checksum of the uploaded file
+   * 
+   */
+  processFileUpload (req,res) {
+    console.log("processFileUpload ("+req.files.kfiledata.name+")");
+
+    console.log (req.files.kfiledata);
+
+    let reply=new KMessage (KMessage.STATUS_OK,{},null);
+
+    res.send(reply.getMessageObject ());
+  }
+
+  /**
    * 
    */
   run () {
     this.app.listen(this.port, () => {
-      console.log("Example app listening at http://localhost: " + this.port);
+      console.log("Knossys data portal listening at http://localhost: " + this.port);
     });
   }
 }

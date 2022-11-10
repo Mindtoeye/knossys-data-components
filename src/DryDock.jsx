@@ -5,6 +5,7 @@ import { WindowManager, ApplicationManager } from '@knossys/knossys-window-manag
 
 import DataTools from './lib/components/utils/DataTools';
 import TableTools from './lib/components/utils/TableTools';
+import KDataUpload from './lib/components/KDataUpload';
 import KDataTable from './lib/components/KDataTable';
 import KDataSource from './lib/components/KDataSource';
 import KDataSourceDummy from './lib/components/KDataSourceDummy';
@@ -27,11 +28,12 @@ class DryDock extends Component {
     this.dataTools=new DataTools ();
     this.tableTools=new TableTools ();
     //this.dataSource=new KDataSourceDummy ();
-    this.dataSource=new KDataSource ();    
+    this.dataSource=new KDataSource ();
 
     this.appManager=new ApplicationManager ();
 
     this.state={
+      backend: "http://localhost:8055",
       trigger: 0,
       wrapText: "false",
       maxsize: 1000,
@@ -52,18 +54,31 @@ class DryDock extends Component {
 
     this.getTableContent=this.getTableContent.bind(this);
     this.getTableSelectContent=this.getTableSelectContent.bind(this);
+    this.getUploadContent=this.getUploadContent.bind(this);
   }
 
   /**
    * 
    */
   componentDidMount () {
+    console.log ("componentDidMount ()");
+
+    this.dataSource.setBackend (this.state.backend);
+
     this.appManager.addApplication ({
       title: "Knossys Data Table",
       type: "window",
       width: 929,
       height: 662,
       content: this.getTableContent
+    });
+
+    this.appManager.addApplication ({
+      title: "Knossys Data Upload",
+      type: "window",
+      width: 250,
+      height: 300,
+      content: this.getUploadContent
     });
 
     this.updateWindowStack ();    
@@ -99,6 +114,13 @@ class DryDock extends Component {
       trigger={this.state.trigger}>          
       </KDataSourceSelect>);
   }
+
+  /**
+   *
+   */
+  getUploadContent () {
+    return (<KDataUpload backend={this.state.backend}></KDataUpload>);
+  }    
 
   /**
    *
