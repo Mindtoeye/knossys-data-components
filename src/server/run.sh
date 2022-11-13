@@ -1,4 +1,4 @@
-clear
+#clear
 
 which curl &> /dev/null
 

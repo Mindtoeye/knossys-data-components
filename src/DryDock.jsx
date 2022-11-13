@@ -25,23 +25,23 @@ class DryDock extends Component {
   constructor(props) {
     super(props);
 
-    this.dataTools=new DataTools ();
-    this.tableTools=new TableTools ();
-    //this.dataSource=new KDataSourceDummy ();
-    this.dataSource=new KDataSource ();
-
     this.appManager=new ApplicationManager ();
 
     this.state={
-      backend: "http://localhost:8055",
+      backend: "http://192.168.0.108:8055",
       trigger: 0,
       wrapText: "false",
       maxsize: 1000,
       maxcols: 10,
       showIndex: "false",
-      backend: this.dataSource.backend,
       globalSettings: {}
     }
+
+    this.dataTools=new DataTools ();
+    this.tableTools=new TableTools ();
+    //this.dataSource=new KDataSourceDummy ();
+    this.dataSource=new KDataSource ();
+    this.dataSource.setBackend (this.state.backend);
 
     this.selectTable=this.selectTable.bind(this);
     this.getData=this.getData.bind(this);
@@ -119,7 +119,7 @@ class DryDock extends Component {
    *
    */
   getUploadContent () {
-    return (<KDataUpload backend={this.state.backend}></KDataUpload>);
+    return (<KDataUpload datasource={this.dataSource} backend={this.state.backend}></KDataUpload>);
   }    
 
   /**
@@ -237,9 +237,10 @@ class DryDock extends Component {
    *
    */
   handleChangeURL (aValue) {
+    this.dataSource.setBackend (aValue);
     this.setState({
       backend: aValue
-    });    
+    });
   }
 
   /**

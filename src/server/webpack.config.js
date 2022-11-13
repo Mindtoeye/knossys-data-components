@@ -1,6 +1,12 @@
 const webpack = require('webpack');
 const path = require('path');
 const resolve = require('path').resolve;
+const { IgnorePlugin } = require('webpack');
+
+const optionalPlugins = [];
+if (process.platform !== "darwin") { // don't ignore on OSX
+  optionalPlugins.push(new IgnorePlugin({ resourceRegExp: /^fsevents$/ }));
+}
 
 const config = {
   mode: 'development',
@@ -24,7 +30,10 @@ const config = {
         }
       }
     }]
-  }
+  },
+  plugins: [
+    ...optionalPlugins,
+  ]  
 };
 
 module.exports = config;

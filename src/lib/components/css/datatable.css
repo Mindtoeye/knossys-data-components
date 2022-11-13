@@ -159,3 +159,7 @@
   font-size: 16pt;
   margin: 10px;
 }
+
+.kdatatable-scrollbarpadding {
+  width: 14px;
+}

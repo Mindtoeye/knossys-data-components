@@ -5,6 +5,8 @@ import { KButton, KTextInput, KToolbar, KToolbarItem, KWaitSpinner } from '@knos
 
 import DataTools from './utils/DataTools';
 import KMessage from './KMessage';
+import KDataBasicTable from './KDataBasicTable';
+import KServerFileTools from './KServerFileTools';
 
 import './css/dataupload.css';
 
@@ -19,7 +21,9 @@ class KDataUpload extends Component {
   constructor (props){
     super (props);
 
+    this.updateTimerId=-1;
     this.dataTools=new DataTools ();
+    this.serverFileTools=new KServerFileTools ();
 
     this.state={
       selectedFile: null, // Initially, no file is selected
@@ -29,13 +33,32 @@ class KDataUpload extends Component {
     this.onFileChange=this.onFileChange.bind(this);
     this.onFileClear=this.onFileClear.bind(this);
     this.onFileUpload=this.onFileUpload.bind(this);    
+    this.onFileQueueUpdate=this.onFileQueueUpdate.bind(this);
+  }
+
+  /**
+   *
+   */
+  componentDidMount () {
+    console.log ("componentDidMount ()");
+
+    this.updateTimerId=setInterval (this.onFileQueueUpdate,5000);
+    this.onFileQueueUpdate ();
+  }
+
+  /**
+   *
+   */
+  componentWillUnmount () {
+    console.log ("componentWillUnmount ()");
+    clearInterval(this.updateTimerId);
   }
 
   /**
    *
    */
   componentDidUpdate(prevProps) {
-    console.log ("componentDidUpdate ()");
+    //console.log ("componentDidUpdate ()");
 
     // Reset all the things!
     /*
@@ -47,6 +70,24 @@ class KDataUpload extends Component {
       });
     }
     */
+  }
+
+  /**
+   * 
+   */
+  onFileQueueUpdate () {
+    //console.log ("onFileQueueUpdate ("+this.props.backend+"/api/v1/getuploadqueue)");
+
+    if (this.props.datasource) {
+      this.props.datasource.apiCall ("getuploadqueue").then ((aMessage) => {      
+        //console.log (aMessage.data);
+        this.setState ({
+          fileQueue: aMessage.data
+        });
+      });    
+    } else {
+      console.log ("No datasource available");
+    }
   }
 
   /**
@@ -69,6 +110,10 @@ class KDataUpload extends Component {
    * On file upload (click the upload button)
    */
   onFileUpload () {     
+    console.log("onFileUpload()");
+
+    let that=this;
+
     const formData = new FormData();     
     formData.append(
       "kfiledata",
@@ -76,10 +121,21 @@ class KDataUpload extends Component {
       this.state.selectedFile.name
     );
      
-    console.log(this.state.selectedFile);
+    //console.log(this.state.selectedFile);
      
     axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
-    axios.post(this.props.backend+"api/v1/upload", formData);
+    axios.post(this.props.backend+"/api/v1/upload", formData)
+    .then(function (response) {
+      console.log("upload response:");
+      console.log(response.data);
+      that.onFileClear ();
+      that.onFileQueueUpdate ();
+    })
+    .catch(function (error) {
+      console.log("upload error:");
+      console.log(error);
+      that.onFileClear ();
+    });
   }
 
   /**
@@ -111,12 +167,18 @@ class KDataUpload extends Component {
    * 
    */
   fileQueue () {
-    return (
-      <div className="kdataupload-queue">
-       <ul>
-       </ul>
-      </div>
-    );
+    let queue=[];
+
+    for (let i=0;i<this.state.fileQueue.length;i++) {
+      let aFile=this.state.fileQueue [i];
+      queue.push([
+        aFile.name,
+        this.serverFileTools.stateToString (aFile.state),
+        "Unassigned"
+      ]);
+    }
+
+    return (<KDataBasicTable headers={["Name","State","Pipeline"]} data={queue}/>);
   }
 
   /**
@@ -136,7 +198,7 @@ class KDataUpload extends Component {
 
     return (
       <div className="kdataupload" style={this.props.styles}>
-        <div>
+        <div className="kdataupload-buttonbar">
           <input id="kfileupload" type="file" onChange={this.onFileChange} />
           <label htmlFor="kfileupload" className="kfileupload">Select file</label>
           {uploadButton}

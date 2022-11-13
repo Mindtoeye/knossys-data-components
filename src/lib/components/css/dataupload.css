@@ -42,8 +42,13 @@ input[type=file] {
   background-color: #323232;
 }
 
+.kdataupload-buttonbar {
+  padding-bottom: 4px;
+}
+
 .kdataupload-info {
   flex: 0;
+  background: #404040;
 }
 
 .kdataupload-queue {

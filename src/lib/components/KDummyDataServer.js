@@ -1,12 +1,17 @@
 import express from 'express';
 import fileUpload from 'express-fileupload';
 import cors from 'cors';
+import chokidar from 'chokidar';
 
+import KServerConstants from './KServerConstants';
 import KHashTable from './utils/KHashTable';
 import DataTools from './utils/DataTools';
 import TableTools from './utils/TableTools';
 import KDataSourceDummy from './KDataSourceDummy';
 import KMessage from './KMessage';
+import KServerFileTools from './KServerFileTools';
+
+let server=null;
 
 /**
  * 
@@ -17,6 +22,10 @@ class KDummyDataServer {
    * 
    */
   constructor () {
+    server=this;
+
+    this.fileQueue=[];
+ 
     this.app = express();
     this.app.use(express.json());
     this.port = 8055;
@@ -28,7 +37,9 @@ class KDummyDataServer {
     this.processRoot=this.processRoot.bind(this);
     this.processTablesGet=this.processTablesGet.bind(this);
     this.processDataGet=this.processDataGet.bind(this);
-    this.processDataGetPage=this.processDataGetPage.bind(this);    
+    this.processDataGetPage=this.processDataGetPage.bind(this);
+    this.processUploadQueueGet=this.processUploadQueueGet.bind(this);
+    this.processUploadQueueGet=this.processUploadQueueGet.bind(this);
 
     this.app.use(fileUpload());
     this.app.use(cors({ origin: '*' }));
@@ -37,6 +48,18 @@ class KDummyDataServer {
     this.app.get('/api/v1/getdata',this.processDataGet);
     this.app.get('/api/v1/getdatapage',this.processDataGetPage);
     this.app.post('/api/v1/upload', this.processFileUpload);       
+    this.app.get('/api/v1/getuploadqueue',this.processUploadQueueGet);
+
+    //this.watcher = chokidar.watch('/mnt/hgfs/incoming/data/kportal/', {
+    this.watcher = chokidar.watch('~/kportal/', {
+       ignored: /^\./, 
+       persistent: true,
+       awaitWriteFinish: true
+     });
+    this.watcher.on('add', function(path) {console.log('File', path, 'has been added');})
+           .on('change', function(path) {console.log('File', path, 'has been changed');})
+           .on('unlink', function(path) {console.log('File', path, 'has been removed');})
+           .on('error', function(error) {console.error('Error happened', error);})
   }
 
   /**
@@ -173,6 +196,18 @@ class KDummyDataServer {
   }
 
   /**
+   * 
+   */
+  processUploadQueueGet (req,res) {
+    //console.log("processUploadQueueGet ()");
+    //console.log (this.fileQueue);
+
+    let reply=new KMessage (KMessage.STATUS_OK,this.fileQueue,null);
+
+    res.send(reply.getMessageObject ());     
+  }
+
+  /**
    * https://www.npmjs.com/package/express-fileupload 
    * 
    * The req.files.foo object will contain the following:
@@ -190,7 +225,13 @@ class KDummyDataServer {
   processFileUpload (req,res) {
     console.log("processFileUpload ("+req.files.kfiledata.name+")");
 
+    let serverFileTools=new KServerFileTools ();
+
     console.log (req.files.kfiledata);
+          
+    let fileObject=serverFileTools.transferData(req.files.kfiledata);
+
+    server.fileQueue.push (fileObject);
 
     let reply=new KMessage (KMessage.STATUS_OK,{},null);
 
@@ -208,3 +249,4 @@ class KDummyDataServer {
 }
 
 export default KDummyDataServer;
+

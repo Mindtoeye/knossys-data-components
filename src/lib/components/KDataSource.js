@@ -12,7 +12,7 @@ class KDataSource {
    *
    */
   constructor () {
-    this.backend="http://localhost:8055/";
+    this.backend="";
 
     this.dataTools=new DataTools ();
     this.tableTools=new TableTools ();
@@ -43,6 +43,20 @@ class KDataSource {
    */
   setBackend (aURL) {
     this.backend=aURL;
+    if (this.backend [this.backend.length-1]!="/") {
+      this.backend=aURL+"/";
+    }
+  }
+
+  /**
+   *
+   */
+  getBackend () {
+    if (this.backend [this.backend.length-1]!="/") {
+      return (this.backend+"/");
+    }
+
+    return (this.backend);
   }
 
   /**
@@ -158,9 +172,14 @@ class KDataSource {
     }
    */
   apiCall (aCall,anArgumentSet) {
-    console.log ("apiCall ("+aCall+")");
+    //console.log ("apiCall ("+aCall+")");
 
-    let aURL=this.backend+"api/v1/"+aCall+"?token="+this.token+"&session="+this.session+"&"+anArgumentSet;
+    let args="";
+    if (anArgumentSet) {
+      args="&"+anArgumentSet;
+    }
+
+    let aURL=this.getBackend()+"api/v1/"+aCall+"?token="+this.token+"&session="+this.session+args;
 
     return new Promise((resolve, reject) => {  
       fetch(aURL,this.standardHeader).then(resp => resp.text()).then((result) => {
