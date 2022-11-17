@@ -12,8 +12,6 @@ class KDataSource {
    *
    */
   constructor () {
-    this.backend="";
-
     this.dataTools=new DataTools ();
     this.tableTools=new TableTools ();
 
@@ -36,6 +34,21 @@ class KDataSource {
     };
 
     this.data=this.tableTools.getEmptyTable();
+
+    // Connection management
+    this.doDing=this.doDing.bind(this);
+
+    this.backend="";
+    this.connected=false;
+    this.pingTimer=setInterval(this.doDing,1000); // We can make this fairly tight since it's almost always going to localhost
+    this.connectionHandler=null;
+  }
+
+  /**
+   * 
+   */
+  setConnectionHandler (aHandler) {
+    this.connectionHandler=aHandler;
   }
 
   /**
@@ -57,6 +70,45 @@ class KDataSource {
     }
 
     return (this.backend);
+  }
+
+  /**
+   *
+   */
+  doDing () {
+    //console.log ("doDing ()");
+
+    let that=this;
+    let aURL=this.getBackend()+"api/v1/ding?token="+this.token+"&session="+this.session;
+
+    return new Promise((resolve, reject) => {  
+      fetch(aURL,this.standardHeader).then(resp => resp.text()).then((result) => {
+        let raw=JSON.parse(result);
+        
+        /*
+        let incomingMessage=new KMessage ();
+        incomingMessage.setStatus (KMessage.STATUS_OK);
+        incomingMessage.setMessage ("Data retrieved");
+        */
+
+        if (that.connected==false) {
+          that.connected=true;
+          that.connectionHandler (true);
+        }
+      }).catch((error) => {
+        let errorMessage=new KMessage ();
+
+        /*
+        errorMessage.setStatus (KMessage.STATUS_ERROR);
+        errorMessage.setMessage(error);
+        */
+
+        if (that.connected==true) {
+          that.connected=false;
+          that.connectionHandler (false);
+        }        
+      });
+    });
   }
 
   /**

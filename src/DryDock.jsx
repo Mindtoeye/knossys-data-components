@@ -1,11 +1,20 @@
 import React, { Component } from 'react';
 
+import { RiStackshareLine } from 'react-icons/ri';
+import { VscFileSubmodule } from 'react-icons/vsc';
+import { MdPermIdentity } from 'react-icons/md';
+import { GiPortal } from 'react-icons/gi';
+import { GrTable } from 'react-icons/gr';
+import { ImTable2 } from 'react-icons/im';
+
 import { KnossysInfoPanel, KButton, KTextInput } from '@knossys/knossys-ui-core';
 import { WindowManager, ApplicationManager } from '@knossys/knossys-window-manager';
+import { Desktop, DesktopIconManager } from '@knossys/knossys-virtual-desktop';
 
 import DataTools from './lib/components/utils/DataTools';
 import TableTools from './lib/components/utils/TableTools';
 import KDataUpload from './lib/components/KDataUpload';
+import KDataGenerator from './lib/components/KDataGenerator';
 import KDataTable from './lib/components/KDataTable';
 import KDataSource from './lib/components/KDataSource';
 import KDataSourceDummy from './lib/components/KDataSourceDummy';
@@ -25,36 +34,37 @@ class DryDock extends Component {
   constructor(props) {
     super(props);
 
+    this.faces=[<RiStackshareLine/>,<VscFileSubmodule/>, <MdPermIdentity />, <GiPortal />, <ImTable2 />];
+
     this.appManager=new ApplicationManager ();
 
     this.state={
-      backend: "http://192.168.0.108:8055",
+      backend: "http://localhost:8055",
       trigger: 0,
-      wrapText: "false",
-      maxsize: 1000,
-      maxcols: 10,
-      showIndex: "false",
       globalSettings: {}
     }
 
     this.dataTools=new DataTools ();
     this.tableTools=new TableTools ();
+
     //this.dataSource=new KDataSourceDummy ();
+    this.processConnection=this.processConnection.bind(this);
     this.dataSource=new KDataSource ();
     this.dataSource.setBackend (this.state.backend);
-
-    this.selectTable=this.selectTable.bind(this);
-    this.getData=this.getData.bind(this);
-    this.wrapText=this.wrapText.bind(this);
-    this.showIndex=this.showIndex.bind(this);
-    this.handleChangePageSize=this.handleChangePageSize.bind(this);
-    this.handleChangeMaxSize=this.handleChangeMaxSize.bind(this);
-    this.handleChangeMaxCols=this.handleChangeMaxCols.bind(this);
-    this.handleChangeURL=this.handleChangeURL.bind(this);    
+    this.dataSource.setConnectionHandler (this.processConnection);
 
     this.getTableContent=this.getTableContent.bind(this);
     this.getTableSelectContent=this.getTableSelectContent.bind(this);
     this.getUploadContent=this.getUploadContent.bind(this);
+    this.getGeneratorContent=this.getGeneratorContent.bind(this);
+
+    // Desktop methods and tools
+
+    this.update = this.update.bind(this);
+    this.launch = this.launch.bind(this);
+
+    this.desktopIconManager=new DesktopIconManager ();
+    this.desktopIconManager.setUpdateDesktop(this.update);     
   }
 
   /**
@@ -81,15 +91,57 @@ class DryDock extends Component {
       content: this.getUploadContent
     });
 
-    this.updateWindowStack ();    
+    this.appManager.addApplication ({
+      title: "Knossys Data Generator",
+      type: "window",
+      width: 350,
+      height: 200,
+      content: this.getGeneratorContent
+    });
+
+    this.desktopIconManager.addApp ("Data Portal","dataportal","knossys:application",3);
+    this.desktopIconManager.addApp ("Data Viewer","datatest","knossys:application",4);
+
+    // we start with the icon hidden at first so that we can show it when the driver
+    // connects
+    let fManagerIcon=this.desktopIconManager.getIcon ("dataportal");
+    if (fManagerIcon) {
+      fManagerIcon.disabled=true;
+      this.update ();
+    }
   }
 
   /**
-   * This will go into the app manager
+   * change this value to trigger a state update in the desktop. Haven't made a decision yet on
+   * which system/library paradigm to use to accomplish this in a cleaner way
    */
-  updateWindowStack () {
-    this.setState(this.state);
-  }   
+  update () {
+    let trgr=this.state.trigger;
+    this.setState ({
+      trigger: trgr++
+    });
+  }
+
+  /**
+   *
+   */
+  launch (anApp) {
+    console.log ("launch ("+anApp+")");
+
+  }  
+
+  /**
+   *
+   */
+  processConnection (aConnected) {
+    console.log ("processConnection ("+aConnected+")");
+
+    let fManagerIcon=this.desktopIconManager.getIcon ("dataportal");
+    if (fManagerIcon) {
+      fManagerIcon.disabled=!aConnected;
+      this.update ();
+    }
+  }
 
   /**
    *
@@ -118,6 +170,16 @@ class DryDock extends Component {
   /**
    *
    */
+  getGeneratorContent () {
+    return (<KDataGenerator  
+      source={this.dataSource}
+      trigger={this.state.trigger}>          
+      </KDataGenerator>);
+  }
+
+  /**
+   *
+   */
   getUploadContent () {
     return (<KDataUpload datasource={this.dataSource} backend={this.state.backend}></KDataUpload>);
   }    
@@ -125,149 +187,22 @@ class DryDock extends Component {
   /**
    *
    */
-  selectTable () {
-    console.log ("selectTable ()");
-
-    this.appManager.addApplication ({
-      title: "Select a Table",
-      type: "dialog",
-      modal: false,
-      centered: true,
-      width: 320,
-      height: 200,
-      content: this.getTableSelectContent
-    });    
-
-    this.updateWindowStack ();   
-  }
-
-  /**
-   *
-   */
-  getData () {
-    console.log ("getData ()");
-
-    this.dataSource.backend=this.state.backend;
-    this.dataSource.setMaxRows (this.state.maxsize);
-    this.dataSource.setMaxCols (this.state.maxcols);
-    this.dataSource.getData ().then ((aMessage) => {      
-      console.log ("Got data");
-
-      // Modify internal state from message
-      this.dataSource.stateFromMessage (aMessage);
-
-      // then trigger visual changes
-      this.setState ({
-        trigger: this.state.trigger+1
-      });
-
-      this.updateWindowStack ();
-    });
-  }
-
-  /**
-   *
-   */
-  wrapText () {
-    console.log ("wrapText ()");
-
-    if (this.state.wrapText=="true") {
-      this.setState ({wrapText: "false"});
-    } else {
-      this.setState ({wrapText: "true"});
-    }
-  }
-
-  /**
-   *
-   */
-  showIndex () {
-    console.log ("showIndex ()");
-
-    if (this.state.showIndex=="true") {
-      this.setState ({
-        showIndex: "false"
-      });
-    } else {
-      this.setState ({
-        showIndex: "true"
-      });
-    }
-  }  
-
-  /**
-   *
-   */
-  handleChangePageSize (aValue) {
-    let intValue=parseInt(aValue);
-    if (intValue>100) {
-      intValue=100;
-    }
-
-    this.dataSource.setPageSize (intValue);
-  }
-
-  /**
-   *
-   */
-  handleChangeMaxSize (aValue) {
-    let intValue=parseInt(aValue);
-    if (intValue>1000) {
-      intValue=1000;
-    }    
-    this.setState({
-      maxsize: intValue
-    });
-  }
-
-  /**
-   *
-   */
-  handleChangeMaxCols (aValue) {
-    let intValue=parseInt(aValue);
-    if (intValue>25) {
-      intValue=25;
-    }
-    this.setState({
-      maxcols: intValue
-    });
-  }
-
-  /**
-   *
-   */
-  handleChangeURL (aValue) {
-    this.dataSource.setBackend (aValue);
-    this.setState({
-      backend: aValue
-    });
-  }
-
-  /**
-   *
-   */
   render() {
     console.log ("render()");
     
-    return (<WindowManager
-        trigger={this.state.trigger}
-        classes="knossys-dark"
-        settings={this.state.globalSettings}
-        appManager={this.appManager}>
-        <KButton onClick={this.selectTable} style={{marginLeft: "2px"}}>Select</KButton>
-        <KButton onClick={this.wrapText} style={{marginLeft: "2px"}}>{"Wrap text: " + this.state.wrapText}</KButton>
-        <KButton onClick={this.showIndex} style={{marginLeft: "2px"}}>{"Show index: " + this.state.showIndex}</KButton>
-        <div className="drydock-divider"></div>
-        <KButton onClick={this.getData} style={{marginLeft: "2px"}}>Generate</KButton>
-        <div className="drydock-label">Page Size:</div>
-        <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={this.dataSource.getPageSize()} handleChange={this.handleChangePageSize}></KTextInput>
-        <div className="drydock-label">Max Nr Rows:</div>
-        <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={this.state.maxsize} handleChange={this.handleChangeMaxSize}></KTextInput>
-        <div className="drydock-label">Max Nr Colums:</div>
-        <KTextInput type={KTextInput.TYPE_ALPHANUMERIC} size={KTextInput.REGULAR} style={{width: "50px"}} value={this.state.maxcols} handleChange={this.handleChangeMaxCols}></KTextInput>
-        <div className="drydock-label">Backend URL:</div>
-        <KTextInput size={KTextInput.REGULAR} style={{width: "360px"}} value={this.state.backend} handleChange={this.handleChangeURL}></KTextInput>
-      </WindowManager> 
+    return (
+      <Desktop 
+        trigger={this.state.trigger} // change this value to trigger a state update in the desktop
+        iconManager={this.desktopIconManager} 
+        faces={this.faces} 
+        snap={true} 
+        launch={this.launch}>      
+          <WindowManager
+            trigger={this.state.trigger}
+            classes="knossys-dark"
+            settings={this.state.globalSettings}
+            appManager={this.appManager}/>
+        </Desktop>
     );
   }
 }

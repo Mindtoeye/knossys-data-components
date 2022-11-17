@@ -44,6 +44,7 @@ class KDummyDataServer {
     this.app.use(fileUpload());
     this.app.use(cors({ origin: '*' }));
     this.app.get('/',this.processRoot);
+    this.app.get('/api/v1/ding',this.processDing);
     this.app.get('/api/v1/gettables',this.processTablesGet);
     this.app.get('/api/v1/getdata',this.processDataGet);
     this.app.get('/api/v1/getdatapage',this.processDataGetPage);
@@ -204,6 +205,15 @@ class KDummyDataServer {
 
     let reply=new KMessage (KMessage.STATUS_OK,this.fileQueue,null);
 
+    res.send(reply.getMessageObject ());     
+  }
+
+  /**
+   * 
+   */
+  processDing (req,res) {
+    //console.log("processDing ()");
+    let reply=new KMessage (KMessage.STATUS_OK,"dong",null);
     res.send(reply.getMessageObject ());     
   }
 

@@ -36,6 +36,7 @@
     "@emotion/css": "^11.5.0",
     "@knossys/knossys-ui-core": "^0.2.21",
     "@knossys/knossys-window-manager": "^0.0.11",
+    "@knossys/knossys-virtual-desktop": "0.1.6",    
     "babel": "^6.23.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.2.3",
