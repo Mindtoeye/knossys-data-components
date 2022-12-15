@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 import { KButton, KTextInput, KToolbar, KToolbarItem, KWaitSpinner } from '@knossys/knossys-ui-core';
-
-import DataTools from './utils/DataTools';
+import { KDataTools, KMessage } from '@knossys/knossys-data-portal';
 
 import './css/datagenerator.css';
 
@@ -18,7 +17,7 @@ class KDataGenerator extends Component {
   constructor (props){
     super (props);
 
-    this.dataTools=new DataTools ();
+    this.dataTools=new KDataTools ();
 
     this.state={
       wrapText: "false",

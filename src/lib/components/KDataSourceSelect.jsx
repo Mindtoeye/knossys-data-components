@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 
 import { KRadioList } from '@knossys/knossys-ui-core';
-
-import DataTools from './utils/DataTools';
-import KMessage from './KMessage';
+import { KDataTools, KTableTools, KMessage } from '@knossys/knossys-data-portal';
 
 import './css/tableselect.css';
 
