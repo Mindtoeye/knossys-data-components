@@ -81,22 +81,6 @@ class KDataGenerator extends Component {
 
       // Modify internal state from message
       this.props.source.stateFromMessage (aMessage);
-
-      // then trigger visual changes
-
-      /* 
-      if (this.props.update) {
-        this.props.update ();
-      }
-      */
-
-      /*  
-      this.setState ({
-        trigger: this.state.trigger+1
-      });
-      */
-
-      //this.updateWindowStack ();
     });
   }
 
