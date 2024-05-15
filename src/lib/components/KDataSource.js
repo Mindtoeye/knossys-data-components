@@ -42,6 +42,15 @@ class KDataSource {
     this.connected=false;
     this.pingTimer=setInterval(this.doDing,1000); // We can make this fairly tight since it's almost always going to localhost
     this.connectionHandler=null;
+
+    this.updater=null;
+  }
+
+  /**
+   * 
+   */
+  setUpdater(aMethod) {
+    this.updater=aMethod;
   }
 
   /**
@@ -121,9 +130,16 @@ class KDataSource {
     this.maxCols=aMessage.meta.maxCols;
     this.currentPage=aMessage.meta.currentPage;
     this.nrPages=aMessage.meta.nrPages;
-    this.pageSize=aMessage.meta.pageSize;    
+    this.pageSize=aMessage.meta.pageSize;
+
+    //console.log ("nrPages: " + this.nrPages + ", currentPage: " + this.currentPage + ", maxRows: " + this.maxRows + ", maxCols: " + this.maxCols);
+    //console.log (aMessage.data);
 
     this.data=aMessage.data;
+
+    if (this.updater) {
+      this.updater ();
+    }
   }
 
   /**
@@ -145,7 +161,7 @@ class KDataSource {
    *
    */
   getTables () {
-    console.log ("getTables ()");
+    //console.log ("getTables ()");
     return (this.apiCall ("gettables",""));
   }
  
@@ -153,7 +169,7 @@ class KDataSource {
    *
    */
   getData () {
-    console.log ("getData ()");
+    //console.log ("getData ()");
     return (this.apiCall ("getdata","maxRows="+this.maxRows+"&maxCols="+this.maxCols));
   }
  
@@ -162,7 +178,7 @@ class KDataSource {
    * just in case we do another check here as well
    */  
   getPage (pageNr) {
-    console.log ("getData ("+pageNr+")");
+    //console.log ("getData ("+pageNr+")");
     return (this.apiCall ("getdatapage","page="+pageNr));
   }
 

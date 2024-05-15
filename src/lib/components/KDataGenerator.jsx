@@ -84,13 +84,20 @@ class KDataGenerator extends Component {
       this.props.source.stateFromMessage (aMessage);
 
       // then trigger visual changes
-      /*
+
+      /* 
+      if (this.props.update) {
+        this.props.update ();
+      }
+      */
+
+      /*  
       this.setState ({
         trigger: this.state.trigger+1
       });
-
-      this.updateWindowStack ();
       */
+
+      //this.updateWindowStack ();
     });
   }
 

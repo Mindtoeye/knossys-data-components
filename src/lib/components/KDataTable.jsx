@@ -52,10 +52,11 @@ class KDataTable extends Component {
    *
    */
   componentDidUpdate(prevProps) {
-    console.log ("componentDidUpdate ()");
+    //console.log ("componentDidUpdate (" + prevProps.trigger + " => " + this.props.trigger + ")");
 
     // Reset all the things!
     if (this.props.trigger !== prevProps.trigger) {
+      //console.log ("Triggering update");
       this.setState ({
         table: this.state.source.data,
         headers: this.setFormatting (this.dataTools.deepCopy (this.state.source.data.headers)),
@@ -464,12 +465,12 @@ class KDataTable extends Component {
    */  
   render() {   
     if (!this.state.table) {
-      console.log ("no data");
+      //console.log ("no data");
       return (this.generateEmpty ());
     }
 
     if (this.state.table.headers.length==0) {
-      console.log ("empty data");
+      //console.log ("empty data");
       return (this.generateEmpty ());
     }
 

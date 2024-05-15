@@ -49,9 +49,6 @@ class DryDock extends Component {
 
     //this.dataSource=new KDataSourceDummy ();
     this.processConnection=this.processConnection.bind(this);
-    this.dataSource=new KDataSource ();
-    this.dataSource.setBackend (this.state.backend);
-    this.dataSource.setConnectionHandler (this.processConnection);
 
     this.getTableContent=this.getTableContent.bind(this);
     this.getTableSelectContent=this.getTableSelectContent.bind(this);
@@ -65,13 +62,18 @@ class DryDock extends Component {
 
     this.desktopIconManager=new DesktopIconManager ();
     this.desktopIconManager.setUpdateDesktop(this.update);     
+
+    this.dataSource=new KDataSource ();
+    this.dataSource.setUpdater(this.update);
+    this.dataSource.setBackend (this.state.backend);
+    this.dataSource.setConnectionHandler (this.processConnection);    
   }
 
   /**
    * 
    */
   componentDidMount () {
-    console.log ("componentDidMount ()");
+    //console.log ("componentDidMount ()");
 
     this.dataSource.setBackend (this.state.backend);
 
@@ -116,9 +118,13 @@ class DryDock extends Component {
    * which system/library paradigm to use to accomplish this in a cleaner way
    */
   update () {
+    //console.log ("update ()");
+
     let trgr=this.state.trigger;
+    trgr++;
+
     this.setState ({
-      trigger: trgr++
+      trigger: trgr
     });
   }
 
@@ -150,6 +156,7 @@ class DryDock extends Component {
     return (<KDataTable 
         headeruppercase="true" 
         shownavigation="true"      
+        update={this.update}
         source={this.dataSource}
         trigger={this.state.trigger}
         wraptext={this.state.wrapText}
@@ -162,8 +169,9 @@ class DryDock extends Component {
    */
   getTableSelectContent () {
     return (<KDataSourceSelect  
+      update={this.update}      
       source={this.dataSource}
-      trigger={this.state.trigger}>          
+      trigger={this.state.trigger}> 
       </KDataSourceSelect>);
   }
 
@@ -172,9 +180,10 @@ class DryDock extends Component {
    */
   getGeneratorContent () {
     return (<KDataGenerator  
+      update={this.update}      
       source={this.dataSource}
       trigger={this.state.trigger}>          
-      </KDataGenerator>);
+    </KDataGenerator>);
   }
 
   /**
@@ -188,7 +197,7 @@ class DryDock extends Component {
    *
    */
   render() {
-    console.log ("render()");
+    //console.log ("render()");
     
     return (
       <Desktop 
@@ -196,7 +205,7 @@ class DryDock extends Component {
         iconManager={this.desktopIconManager} 
         faces={this.faces} 
         snap={true} 
-        launch={this.launch}>      
+        launch={this.launch}>
           <WindowManager
             trigger={this.state.trigger}
             classes="knossys-dark"
