@@ -10,14 +10,13 @@ import { ImTable2 } from 'react-icons/im';
 import { KnossysInfoPanel, KButton, KTextInput } from '@knossys/knossys-ui-core';
 import { WindowManager, ApplicationManager } from '@knossys/knossys-window-manager';
 import { Desktop, DesktopIconManager } from '@knossys/knossys-virtual-desktop';
+import { KDataTools, KTableTools, KDataSourceDummy } from '@knossys/knossys-data-portal';
 
-import DataTools from './lib/components/utils/DataTools';
-import TableTools from './lib/components/utils/TableTools';
 import KDataUpload from './lib/components/KDataUpload';
 import KDataGenerator from './lib/components/KDataGenerator';
 import KDataTable from './lib/components/KDataTable';
 import KDataSource from './lib/components/KDataSource';
-import KDataSourceDummy from './lib/components/KDataSourceDummy';
+//import KDataSourceDummy from './lib/components/KDataSourceDummy';
 import KDataSourceSelect from './lib/components/KDataSourceSelect';
 
 import '../css/main.css';
@@ -44,8 +43,8 @@ class DryDock extends Component {
       globalSettings: {}
     }
 
-    this.dataTools=new DataTools ();
-    this.tableTools=new TableTools ();
+    this.dataTools=new KDataTools ();
+    this.tableTools=new KTableTools ();
 
     //this.dataSource=new KDataSourceDummy ();
     this.processConnection=this.processConnection.bind(this);

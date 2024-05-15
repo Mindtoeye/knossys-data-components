@@ -1,7 +1,5 @@
 
-import DataTools from './utils/DataTools';
-import TableTools from './utils/TableTools';
-import KMessage from './KMessage';
+import { KDataTools, KTableTools, KMessage } from '@knossys/knossys-data-portal';
 
 /**
  *
@@ -12,8 +10,8 @@ class KDataSource {
    *
    */
   constructor () {
-    this.dataTools=new DataTools ();
-    this.tableTools=new TableTools ();
+    this.dataTools=new KDataTools ();
+    this.tableTools=new KTableTools ();
 
     this.token=this.dataTools.uuidv4();
     this.session=this.dataTools.uuidv4();

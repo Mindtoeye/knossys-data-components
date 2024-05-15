@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 import { KButton, KTextInput, KToolbar, KToolbarItem, KWaitSpinner } from '@knossys/knossys-ui-core';
+import { KDataTools, KMessage, KServerFileTools } from '@knossys/knossys-data-portal';
 
-import DataTools from './utils/DataTools';
-import KMessage from './KMessage';
 import KDataBasicTable from './KDataBasicTable';
-import KServerFileTools from './KServerFileTools';
 
 import './css/dataupload.css';
 
@@ -22,7 +20,7 @@ class KDataUpload extends Component {
     super (props);
 
     this.updateTimerId=-1;
-    this.dataTools=new DataTools ();
+    this.dataTools=new KDataTools ();
     this.serverFileTools=new KServerFileTools ();
 
     this.state={

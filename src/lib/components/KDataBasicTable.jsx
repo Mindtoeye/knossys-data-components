@@ -5,9 +5,7 @@ import { CgPushChevronLeft, CgPushChevronRight } from 'react-icons/cg';
 import { GrTextAlignLeft, GrTextAlignCenter, GrTextAlignRight } from 'react-icons/gr';
 
 import { KButton, KTextInput, KToolbar, KToolbarItem, KWaitSpinner } from '@knossys/knossys-ui-core';
-
-import DataTools from './utils/DataTools';
-import KMessage from './KMessage';
+import { KDataTools, KMessage } from '@knossys/knossys-data-portal';
 
 import './css/datatable.css';
 
@@ -22,7 +20,7 @@ class KDataBasicTable extends Component {
   constructor (props) {
     super (props);
 
-    this.dataTools=new DataTools ();
+    this.dataTools=new KDataTools ();
   }
 
   /**
